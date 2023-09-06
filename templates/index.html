@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block bodyblock %}
+
+<div>
+    <table>
+        <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Brand</th>
+            <th>Flavor</th>
+            <th>Nicotine Level</th>
+            <th>Bottle Size</th>
+            <th>VG/PG Ratio</th>
+        </tr>
+        {% for item in lst %}
+        <tr>
+            <td><im src="{{item.productImageLink}}"></img></td>
+            <td>{{item.name}}</td>
+            <td>{{item.brand}}</td>
+            <td>{{item.flavor}}</td>
+            <td>
+                {% for nicLvl in item.nic %}
+                {{nicLvl.0.0}}-{{nicLvl.0.1}},
+                {% endfor %}
+            </td>
+            <td>
+                {% for size in item.size %}
+                {{size.0.0}}-{{size.0.1}},
+                {% endfor %}
+            </td>
+            <td>
+                {% for vgpg in item.vgpg %}
+                {{vgpg.0}}
+                {{vgpg.1}}
+                {% endfor %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock bodyblock %}

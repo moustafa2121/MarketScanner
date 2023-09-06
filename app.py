@@ -1,19 +1,23 @@
-"""
-This script runs the application using a development server.
-It contains the definition of routes and views for the application.
-"""
 
-from flask import Flask
+
+import dbInterface
+from flask import Flask, render_template
+
 app = Flask(__name__)
-
 wsgi_app = app.wsgi_app
 
 
 @app.route('/')
-def hello():
-    """Renders a sample page."""
-    return "Hello World!"
+def homePage():
+    #get the data
+    data = dbInterface.openJsonDB("static/vape-shop-dubai.json")
 
+    return render_template("index.html", lst=data[:35])
+
+
+
+#move to the a server running script
+#also change the server
 if __name__ == '__main__':
     import os
     HOST = os.environ.get('SERVER_HOST', 'localhost')
@@ -21,4 +25,4 @@ if __name__ == '__main__':
         PORT = int(os.environ.get('SERVER_PORT', '5555'))
     except ValueError:
         PORT = 5555
-    app.run(HOST, PORT)
+    app.run(HOST, PORT, True)
