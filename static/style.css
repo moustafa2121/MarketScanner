@@ -11,7 +11,6 @@ body {
     align-items: center;
     background-color:black;
 }
-
 #navBarTitle {
     font-size: 120px;
     text-transform: uppercase;
@@ -19,7 +18,7 @@ body {
     letter-spacing: -3px;
     transition: 700ms ease;
     font-variation-settings: "wght" 311;
-    margin-bottom: 0.8rem;
+    margin:10px 0 0 0;
     color: #FDDC5C;
     outline: none;
     text-align: center;
@@ -28,4 +27,29 @@ body {
 #navBarTitle:hover {
     font-variation-settings: "wght" 582;
     letter-spacing: 1px;
+}
+#tableContainer {
+    padding-left: 10vw;
+    padding-right: 10vw;
+    margin: 0;
+}
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,500,300,700);
+table {
+    position: relative;
+    margin-top: 20px;
+    font-family: 'Roboto', sans-serif;
+    border: 1px solid black !important;
+}
+table .centerText{
+    text-align:center;
+}
+thead{
+}
+th {
+    /*opacity: 0.5 !important;*/
+    position: sticky;
+    top: 0px;
+    white-space: nowrap;
+    padding-bottom: 0;
+    background-color: dimgray !important;
 }
