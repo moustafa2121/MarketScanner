@@ -1,9 +1,3 @@
-main {
-    height: 80vh;
-    box-sizing:border-box;
-    position:relative;
-}
-
 /* top navigation bar*/
 .navbar {
     height: 20vh;
@@ -14,7 +8,7 @@ main {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background-color:black;
+    background-color: black;
 }
 #navBarTitle {
     font-size: 120px;
@@ -22,17 +16,30 @@ main {
     font-family: 'Gambetta', serif;
     letter-spacing: -3px;
     transition: 700ms ease;
-    padding:10px 0 0 0;
+    padding: 10px 0 0 0;
     color: #FDDC5C;
     outline: none;
     text-align: center;
 }
 
-/* the table*/
+/* holds the table */
+main {
+    height: 75vh;
+    box-sizing: border-box;
+    position: relative;
+    margin-top: 50px;
+}
+
+/* the table holder*/
+article {
+    height: 100%;
+    margin: 0 10vw 0 10vw;
+    position: relative;
+}
+/* contains the table to create the scroll effect */
 #tableContainer {
     height:100%;
-    padding:0 10vw 0 10vw;
-    margin: 0 0 0 0;
+    margin: 0;
     overflow: auto;
 }
 @import url(https://fonts.googleapis.com/css?family=Roboto:400,500,300,700);
@@ -40,21 +47,46 @@ table {
     font-family: 'Roboto', sans-serif;
     border-collapse: collapse;
     height: 100%;
-    top:0;
+    width:100%;
 }
-th {
-    position: sticky;
-    top: 0px;
-    border: 1px solid #ddd;
-    padding: 8px;
-    padding-top: 18px;
-    padding-bottom: 18px;
-    white-space: nowrap;
+
+/* scroll bar styling*/
+::-webkit-scrollbar {
+    width: 12px;
+}
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    border-radius: 0;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 0px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+}
+
+/* the holder for each header. makes it absolute
+    and above the scroll bar */
+thead tr th span {
+    position: absolute;
+    top: -34px;
+    z-index: 2;
+    height: 36px;
+    display: inline-block;
     background-color: #BBA151 !important;
-    border-top: 0;
+    padding-top: 7px;
+    text-align: center;
+    align-content: center;
 }
+/* class for each column: sets the width*/
+.imgColumn{width:5%;}
+.nameColumn{width:40%;}
+.brandColumn{width:15%;}
+.flavorColumn{width:18.75%;}
+.nicColumn{width:8%;}
+.sizeColumn{width:6%;}
+.vgpgColumn{width:8%;}
+
+/* for each cell of the table*/
 td {
-    width: 70px;
     height: 70px;
     border: 1px solid #ddd;
     padding: 8px;
@@ -64,14 +96,22 @@ td {
     max-width: 1px !important; /*enforces the overflow of text*/
 }
 
+/* styling */
 table tr:nth-child(odd) {
     background-color: #f2f2f2;
 }
-table .centerText{
+.centerText{
     text-align:center;
+}
+.leftAlign{
+    text-align:left;
 }
 table tr:hover {
     background-color: #ddd;
+}
+.emptyCell{
+    color:gray;
+    cursor:default;
 }
 
 /* image of each row */
@@ -86,10 +126,13 @@ table tr:hover {
     opacity: 0.7;
 }
 
+/* modal that displays and zooms the iamge when the image
+    is clicked on
+*/
 /* The Modal (background) */
 #imgModal {
     position: fixed;
-    z-index: 1;
+    z-index: 3;
     padding-top: 100px;
     left: 0;
     top: 0;
@@ -99,7 +142,6 @@ table tr:hover {
     background-color: black;
     background-color: rgba(0,0,0,0.9);
 }
-
 /* Modal Content (image) */
 #imgModalContent {
     margin: auto;
@@ -107,13 +149,13 @@ table tr:hover {
     width: 80%;
     max-width: 700px;
 
-    /* Add Animation */
+    /* animation */
     -webkit-animation-name: zoom;
     -webkit-animation-duration: 0.6s;
     animation-name: zoom;
     animation-duration: 0.6s;
 }
-
+/* zoom effect */
 @-webkit-keyframes zoom {
     from {
         -webkit-transform: scale(0)
@@ -131,7 +173,7 @@ table tr:hover {
     }
 }
 
-/* The Close Button */
+/* close button for the modal */
 #imgModalClose {
     position: absolute;
     top: 15px;
@@ -141,8 +183,7 @@ table tr:hover {
     font-weight: bold;
     transition: 0.3s;
 }
-#imgModalClose:hover,
-#imgModalClose:focus {
+#imgModalClose:hover #imgModalClose:focus {
     color: #bbb;
     text-decoration: none;
     cursor: pointer;
@@ -160,11 +201,12 @@ table tr:hover {
 footer {
     padding: 0;
     margin: 50px 0 0 0;
-    height:40px;
+    height:4vh;
     width:100vw;
     text-align: center;
     background-color: black;
     color: white;
     position:relative;
     bottom:0;
+    left:0;
 }

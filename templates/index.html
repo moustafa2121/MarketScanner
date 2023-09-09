@@ -2,52 +2,77 @@
 
 {% block bodyblock %}
 
-<article id="tableContainer">
-    <table class="table-hover align-middle">
-        <thead>
-            <tr class="centerText">
-                <th style="width:5%">Image</th>
-                <th style="width:40%">Name</th>
-                <th style="width:15%">Brand</th>
-                <th style="width:20%">Flavor</th>
-                <th style="width:8%">Nicotine (mg)</th>
-                <th style="width:6%">Bottle (ml)</th>
-                <th style="width:8%">VG/PG</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in lst %}
-            <tr>
-                <td class="imgColumn">
-                    <img class="img-thumbnail" src="{{item.productImageLink}}">
-                </td>
-                <td>{{item.name}}</td>
-                <td>{{item.brand}}</td>
-                <td>{{item.flavor}}</td>
-                <td class="centerText">
-                    {% for nicLvl in item.nic %}
-                    {{nicLvl.0.0}},
-                    {% endfor %}
-                </td>
-                <td class="centerText">
-                    {% for size in item.size %}
-                    {{size.0.0}},
-                    {% endfor %}
-                </td>
-                <td class="centerText">
-                    {% for vgpg in item.vgpg %}
-                    {{vgpg.0}}/{{vgpg.1}}
-                    {% endfor %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot></tfoot>
-    </table>
-        
-    <footer>
-        this is footer
-    </footer>
-</article>
+<article>
+    <div id="tableContainer">
+        <table class="table-hover align-middle">
+            <thead>
+                <tr class="leftAlign">
+                    <th><span class="imgColumn">Image</span></th>
+                    <th><span class="nameColumn">Name</span></th>
+                    <th><span class="brandColumn">Brand</span></th>
+                    <th><span class="flavorColumn">Flavor</span></th>
+                    <th><span class="nicColumn">Nicotine (mg)</span></th>
+                    <th><span class="sizeColumn">Bottle (ml)</span></th>
+                    <th><span class="vgpgColumn">VG/PG</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in lst %}
+                <tr>
+                    <td class="imgColumn">
+                        <img class="img-thumbnail" src="{{item.productImageLink}}">
+                    </td>
+                    <td class="nameColumn"><a href="{{item.itemLink}}" class="link-dark" target="_blank">{{item.name}}</a></td>
 
+                    <!-- brand -->
+                    {% if item.brand|length > 0 %}
+                    <td class="brandColumn">{{item.brand}}</td>
+                    {% else %}
+                    <td class="brandColumn emptyCell">{{constantsValues.noDataVariable}}</td>
+                    {% endif %}
+
+                    <!-- flavor -->
+                    {% if item.flavor|length > 0 %}
+                    <td class="flavorColumn">{{item.flavor}}</td>
+                    {% else %}
+                    <td class="flavorColumn emptyCell">{{constantsValues.noDataVariable}}</td>
+                    {% endif %}
+
+                    <!-- nicotine level -->
+                    {% if item.nic|length > 0 %}
+                    <td class="nicColumn centerText">
+                        {% for nicLvl in item.nic %}
+                        {{ nicLvl.0.0 }}{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                    </td>
+                    {% else %}
+                    <td class="nicColumn emptyCell centerText">{{constantsValues.noDataVariable}}</td>
+                    {% endif %}
+
+                    <!-- bottle size -->
+                    {% if item.size|length > 0 %}
+                    <td class="sizeColumn centerText">
+                        {% for size in item.size %}
+                        {{ size.0.0 }}{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                    </td>
+                    {% else %}
+                    <td class="sizeColumn emptyCell centerText">{{constantsValues.noDataVariable}}</td>
+                    {% endif %}
+
+                    <!-- VG/PG -->
+                    {% if item.vgpg|length > 0 %}
+                    {% for vgpg in item.vgpg %}
+                    <td class="vgpgColumn centerText">{{vgpg.0}}/{{vgpg.1}}</td>
+                    {% endfor %}
+                    {% else %}
+                    <td class="vgpgColumn emptyCell centerText">{{constantsValues.noDataVariable}}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot></tfoot>
+        </table>
+    </div>
+</article>
 {% endblock bodyblock %}

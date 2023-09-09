@@ -11,8 +11,9 @@ wsgi_app = app.wsgi_app
 def homePage():
     #get the data
     data = dbInterface.openJsonDB("static/vape-shop-dubai.json")
-
-    return render_template("index.html", lst=data[:35])
+    #used to fill empty cells
+    constantsValues = {'noDataVariable' : 'No Data'}
+    return render_template("index.html", lst=data[:35], constantsValues=constantsValues)
 
 
 

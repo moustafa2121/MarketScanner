@@ -8,11 +8,10 @@ const _ = (function () {
     let modalActive = false;
 
     //when the user clicks on <span> (x), close the modal
-    imgModalClose.addEventListener("click", function () {
+    imgModalClose.addEventListener("click", () => {
         modal.style.display = "none";
         modalActive = false;
     });
-
     //if a click happens on the document and the modal is open and
     //the click is not on the image, then close the modal
     document.addEventListener("click", event => {
@@ -36,7 +35,7 @@ const _ = (function () {
             modalImg.src = this.src;
             //give some time till setting it to true so the modal can pop up
             //if set true immediately it will deactivate due to the document click listener
-            setTimeout(() => { modalActive = true; }, 500);
+            setTimeout(() => { modalActive = true; }, 100);
         });
     }
 })();

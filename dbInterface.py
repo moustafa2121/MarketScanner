@@ -25,7 +25,7 @@ class vapeShopDubaiHolder:
     def __init__(self, jsonItem):
         #items that matches fully with one of the expected keywords
         self.name = jsonMatcher(jsonItem, ["name"])
-        self.itemLink = jsonMatcher(jsonItem, ["link"])
+        self.itemLink = jsonMatcher(jsonItem, ["itemLink"])
         self.productImageLink = jsonMatcher(jsonItem, ["productImageLink"])
         self.brand = jsonMatcher(jsonItem, ['Brand Name', 'Brand', 'NBrand Name', 'Manufacturer'])
         self.flavor = jsonVariantMatcher(jsonItem, ['Flavor', 'Flavour', 'Flavor Type', 'Flavor Profile', 'Flavour Profile'],
@@ -58,7 +58,9 @@ class vapeShopDubaiHolder:
 def jsonVariantMatcher(json, keyOptions_1, keyOptions_2, regex_1=None, regex_2=None):
     lst1 = jsonMatcher(json, keyOptions_1, regex_1)
     lst2 = jsonMatcher(json["variants"], keyOptions_2, regex_2)
-    if len(lst1) == 0:
+    if len(lst1) == 0 and len(lst2) == 0:
+        return ''
+    elif len(lst1) == 0:
         return lst2
     elif len(lst2) == 0:
         return lst1
