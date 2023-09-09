@@ -6,8 +6,8 @@
     <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 
-    <link rel="stylesheet" href="static/style.css">
-
+    <link rel="stylesheet" href="static/style.css"/>
+    <script src="static/helperJS.js" defer ></script>
 
     <title>Vape Finder</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,6 +18,12 @@
         <div class="container-fluid titleContainer">
             <h1 id="navBarTitle" class="navbar-brand">Vape Finder</h1>
         </div>
+    </div>
+
+    <!-- modal for the zoom-in image -->
+    <div style="display:none" id="imgModal" class="modal">
+        <span id="imgModalClose">&times;</span>
+        <img id="imgModalContent">
     </div>
 
     <main>

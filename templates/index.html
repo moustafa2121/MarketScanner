@@ -9,7 +9,7 @@
                 <th style="width:5%">Image</th>
                 <th style="width:40%">Name</th>
                 <th style="width:15%">Brand</th>
-                <th style="width:18%">Flavor</th>
+                <th style="width:20%">Flavor</th>
                 <th style="width:8%">Nicotine (mg)</th>
                 <th style="width:6%">Bottle (ml)</th>
                 <th style="width:8%">VG/PG</th>
@@ -18,8 +18,10 @@
         <tbody>
             {% for item in lst %}
             <tr>
-                <td><img src="{{item.productImageLink}}"></td>
-                <td class="itemName">{{item.name}}</td>
+                <td class="imgColumn">
+                    <img class="img-thumbnail" src="{{item.productImageLink}}">
+                </td>
+                <td>{{item.name}}</td>
                 <td>{{item.brand}}</td>
                 <td>{{item.flavor}}</td>
                 <td class="centerText">
@@ -42,7 +44,7 @@
         </tbody>
         <tfoot></tfoot>
     </table>
-
+        
     <footer>
         this is footer
     </footer>
