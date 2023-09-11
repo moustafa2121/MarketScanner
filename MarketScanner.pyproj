@@ -31,10 +31,16 @@
     <Compile Include="dbInterface.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="models.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
     <Content Include="static\helperJS.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="static\loadPage.js">
       <SubType>Code</SubType>
     </Content>
     <Content Include="static\style.css">

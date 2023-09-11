@@ -10,3 +10,7 @@ pip==23.2.1
 setuptools==68.1.2
 Werkzeug==2.3.7
 zipp==3.16.2
+Flask-SQLAlchemy==3.0.5
+greenlet==2.0.2
+SQLAlchemy==2.0.20
+typing_extensions==4.7.1

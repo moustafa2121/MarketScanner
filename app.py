@@ -1,19 +1,22 @@
-
-
-import dbInterface
+import dbInterface, models
 from flask import Flask, render_template
+from flask import request, make_response
 
 app = Flask(__name__)
 wsgi_app = app.wsgi_app
 
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def homePage():
     #get the data
     data = dbInterface.openJsonDB("static/vape-shop-dubai.json")
     #used to fill empty cells
     constantsValues = {'noDataVariable' : 'No Data'}
-    return render_template("index.html", lst=data[:35], constantsValues=constantsValues)
+
+    print(request.cookies.get(''))
+    #models.runTest()
+
+    return render_template("index.html", lst=data[:15], constantsValues=constantsValues)
 
 
 
