@@ -48,7 +48,8 @@
 
                     <!-- flavor -->
                     {% if item.flavor|length > 0 %}
-                    <td class="flavorColumn">{{item.flavor}}</td>
+                    <!-- todo: loop over it -->
+                    <td class="flavorColumn">{{item.flavor.0}}</td>
                     {% else %}
                     <td class="flavorColumn emptyCell">{{constantsValues.noDataVariable}}</td>
                     {% endif %}

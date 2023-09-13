@@ -28,7 +28,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.py" />
-    <Compile Include="dbInterface.py">
+    <Compile Include="dbExtract.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="models.py">
@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
+    <Content Include="static\cleanJson_Vape Shop Dubai.json" />
     <Content Include="static\helperJS.js">
       <SubType>Code</SubType>
     </Content>
