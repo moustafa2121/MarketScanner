@@ -11,7 +11,7 @@ db = SQLAlchemy()
 #creates the app and its routes
 def create_app():
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vapeDB7.sqlite3'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vapeDB9.sqlite3'
     #app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
     #wsgi_app = app.wsgi_app
     db.init_app(app)#instead of: db = SQLAlchemy(app)
@@ -38,42 +38,43 @@ def create_app():
     def website():
         import models
         #1: get the json from the scraper/microservice
-        metaValues, itemsList = dbExtract.openJson('static/cleanJson_Vape Shop Dubai.json')
+        metaValues, itemList = dbExtract.openJson('static/cleanJson_Vape Shop Dubai.json')
         
-        #2: create and save the db items
-        commit = False
-        websiteObject = models.addWebsite(metaValues['websiteName'],
-                                   metaValues['websiteBase'],
-                                   metaValues['websiteIcon'],
-                                   metaValues['numberOfItems'],
-                                   'timestamp',
-                                   commit)
-
-        #add the items
-        for item in itemsList[:1]:
-            productTmp = models.addProduct(item['name'],
-                            item['itemLink'],
-                            item['productImageLink'],
-                            item['brand'],
-                            websiteObject,
-                            commit)
-            for flav in item['flavor']:
-                currentFlav = models.addProductItem(models.ProductItem, flav, models.ProductItemType.flavor, productTmp, commit)
-            for nic in item['nic']:
-                currentNic = models.addProductItem(models.ProductItem_integer, nic, models.ProductItemType.nic, productTmp, commit)
-            for size in item['size']:
-                currentSize = models.addProductItem(models.ProductItem_integer, size, models.ProductItemType.size, productTmp, commit)
-            for vgpg in item['vgpg']:
-                currentVgpg = models.addProductItem(models.ProductItem, str(vgpg), models.ProductItemType.vgpg, productTmp, commit)
-
-        print(models.ItemWebsite.query.all())
-        print(models.Product.query.all()[0])
-
         #products = models.Product.query.all()
-        #print("all products before", products)
         #for product in products:
         #    db.session.delete(product)
-        #    db.session.commit()
+        #db.session.commit()
+        #print(models.Product.query.all())
+
+        #2: create and save the db items
+        #commit = True
+        #websiteObject = models.addWebsite(metaValues['websiteName'],
+        #                           metaValues['websiteBase'],
+        #                           metaValues['websiteIcon'],
+        #                           metaValues['numberOfItems'],
+        #                           'timestamp',
+        #                           commit)
+
+        ##add the items
+        #for i, item in enumerate(itemList):
+        #    print("adding: ", i)
+        #    productTmp = models.addProduct(item['itemLink'],
+        #                    item['name'],
+        #                    item['productImageLink'],
+        #                    item['brand'],
+        #                    websiteObject,
+        #                    commit)
+            
+        #    [models.addProductItem_string(flav, models.ProductItemType.flavor, productTmp, commit) for flav in item['flavor']]
+        #    [models.addProductItem_integer(nic, models.ProductItemType.nic, productTmp, commit) for nic in item['nic']]
+        #    [models.addProductItem_integer(size, models.ProductItemType.size, productTmp, commit) for size in item['size']]
+        #    [models.addProductItem_string(str(vgpg), models.ProductItemType.vgpg, productTmp, commit) for vgpg in item['vgpg']]
+
+
+        #products = models.Product.query.all()
+        #for product in products:
+        #    db.session.delete(product)
+        #db.session.commit()
         #print(models.Product.query.all())
 
         return "olo"

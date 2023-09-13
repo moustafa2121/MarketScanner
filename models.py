@@ -1,4 +1,3 @@
-
 from app import db
 from sqlalchemy.orm import relationship
 from enum import Enum
@@ -59,11 +58,15 @@ class ItemWebsite(db.Model):
                f"Timestamp: {self.timeStamp}"
 
 def addWebsite(name, baseUrl, icon, numberOfItems, timeStamp, commit=True):
-    website = ItemWebsite(name, baseUrl, icon, numberOfItems, timeStamp)
-    db.session.add(website)
-    if commit:
-        db.session.commit()
-    return website
+    existingWebsite = ItemWebsite.query.filter_by(name=name).first()
+    if existingWebsite is None:
+        website = ItemWebsite(name, baseUrl, icon, numberOfItems, timeStamp)
+        db.session.add(website)
+        if commit:
+            db.session.commit()
+        return website
+    else:
+        return existingWebsite
 
 
 class Product(db.Model):
@@ -111,35 +114,69 @@ class ProductItem(db.Model):
     __tablename__ = 'product_item'
     id_ = db.Column(db.Integer, primary_key=True)
     itemType = db.Column(db.Enum(ProductItemType), nullable=False)
-
-    value = db.Column(db.String(100))
-    __mapper_args__ = {'polymorphic_on': value}
+    
+    discriminator = db.Column('type', db.String(50))
+    __mapper_args__ = {'polymorphic_on': discriminator}
 
     product_id = db.Column(db.String(400), db.ForeignKey('product.itemLink'))
     product = db.relationship("Product", back_populates='items')
-
-    def __init__(self, value, itemType, product):
-        self.value = value
+        
+    def __init__(self, itemType, product):
         self.itemType = itemType
         self.product = product
 
 class ProductItem_integer(ProductItem):
     __tablename__ = 'product_item_integer'
-    id_ = db.Column(db.Integer, db.ForeignKey('product_item.id_'), primary_key=True)
-    value = db.Column(db.Integer)
     __mapper_args__ = { 'polymorphic_identity': 'product_item_integer', }
+    integerValue = db.Column(db.Integer)
 
+    def __init__(self, integerValue, itemType, product):
+        super().__init__(itemType, product)
+        self.integerValue = integerValue
+
+class ProductItem_string(ProductItem):
+    __tablename__ = 'product_item_string'
+    __mapper_args__ = { 'polymorphic_identity': 'product_item_string', }
+    stringValue = db.Column(db.String(100))
+
+    def __init__(self, stringValue, itemType, product):
+        super().__init__(itemType, product)
+        self.stringValue = stringValue
 
 def addProduct(name, itemLink, productImageLink, brand, website, commit=True):
-    product = Product(name, itemLink, productImageLink, brand, website)
-    db.session.add(product)
-    if commit:
-        db.session.commit()
-    return product
+    existingProduct = Product.query.filter_by(itemLink=itemLink).first()
+
+    if existingProduct is None:
+        product = Product(itemLink, name, productImageLink, brand, website)
+        db.session.add(product)
+        if commit:
+            db.session.commit()
+        return product
+    else:
+        return existingProduct
     
-def addProductItem(productItemClass, value, itemType, product, commit=True):
-    productItem = productItemClass(value, itemType, product)
-    db.session.add(productItem)
-    if commit:
-        db.session.commit()
-    return productItem
+
+    
+def addProductItem_integer(integerValue, itemType, product, commit=True):
+    existingItem = ProductItem_integer.query.filter_by(integerValue=integerValue, 
+                                                     product=product).first()
+    if existingItem is None:
+        productItem = ProductItem_integer(integerValue, itemType, product)
+        db.session.add(productItem)
+        if commit:
+            db.session.commit()
+        return productItem
+    else:
+        return existingItem
+
+def addProductItem_string(stringValue, itemType, product, commit=True):
+    existingItem = ProductItem_string.query.filter_by(stringValue=stringValue, 
+                                                     product=product).first()
+    if existingItem is None:
+        productItem = ProductItem_string(stringValue, itemType, product)
+        db.session.add(productItem)
+        if commit:
+            db.session.commit()
+        return productItem
+    else:
+        return existingItem
