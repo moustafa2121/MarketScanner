@@ -1,4 +1,3 @@
-
 /*
 a closure that is used to hold the values of the 
 pagination of the table
@@ -55,6 +54,10 @@ function setThePagination(pageNumber, totalPages) {
     while (ulPagination.firstChild)
         ulPagination.removeChild(ulPagination.lastChild);
 
+    //invoke the loading of table and the data of the 
+    //previous / next tables
+    loadTheTable(pageNumber);
+
     //loop over the new page values
     for (page of paginationArray) {
         //new li and a elements
@@ -70,7 +73,7 @@ function setThePagination(pageNumber, totalPages) {
         if (page === paginationManager().palceHolderValue)
             liEleA.classList.add('disabled')
         else//else give it an event listener
-            setPageEventListener(liEleA);
+            setPageButtonEventListener(liEleA);
 
         //if the current value is the current page then set it to .active
         if (page == pageNumber)
@@ -84,7 +87,7 @@ function setThePagination(pageNumber, totalPages) {
 }
 
 //sets a listener for the page buttons
-function setPageEventListener(pageEle) {
+function setPageButtonEventListener(pageEle) {
     pageEle.addEventListener("click", () => {
         if (!pageEle.classList.contains('active')) {
             //set the new current page

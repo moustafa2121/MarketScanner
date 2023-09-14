@@ -1,8 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 import dbExtract
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 from flask import request, make_response
-import uuid, math
+import uuid, math, json
 
 #db reference
 db = SQLAlchemy()
@@ -12,35 +12,50 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vapeDB9.sqlite3'
-    #app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
-    #wsgi_app = app.wsgi_app
     db.init_app(app)#instead of: db = SQLAlchemy(app)
     
+    itemsPerPage = 15
     
+    def dataRangerFinder(pageNumber):
+        return (pageNumber-1) * itemsPerPage, pageNumber * itemsPerPage
+
     @app.route('/', methods=['GET'])
     def homePage():
         import models
         #used to fill empty cells
 
         #get the data
-        dataRangeStart = 0
-        dataRangeEnd = 15
-        data = models.Product.query.all()
-        dataToSend = data[dataRangeStart:dataRangeEnd]
+        dataRangeStart, dataRangeEnd = dataRangerFinder(1)
         
-        itemsPerPage = 15
-        totalPages = math.ceil(len(data)/itemsPerPage)
+        totalItems = models.getProductsCount()
+
+        data = models.getProducts(dataRangeStart, dataRangeEnd)
+        totalPages = math.ceil(totalItems/itemsPerPage)
         constantsValues = {'noDataVariable':'No Data',
                            "itemsPerPage":itemsPerPage,
                            "totalPages":totalPages,
-                           "totalItems":len(data)}
+                           "totalItems":totalItems}
 
-        response = make_response(render_template("index.html", lst=dataToSend, constantsValues=constantsValues))
+        response = make_response(render_template("index.html", lst=data,
+                                                constantsValues=constantsValues))
         
-        #check cookie, if needed
+        #check cookie, if needed it will attach to the response
         attachCookie(response)
 
         return response
+
+    @app.route('/moredata/<pageNumber>', methods=['GET'])
+    def getMoreItems(pageNumber):
+        import models
+
+        print("called: ", pageNumber)
+        pageNumber = int(pageNumber)
+        dataRangeStart, dataRangeEnd = dataRangerFinder(pageNumber)
+        products = models.getProducts(dataRangeStart, dataRangeEnd)
+        
+        return json.dumps({"returnValue":"returnValue"})
+
+        #if invalid go to homepage
 
     #make a request to populate the DB with a website
     @app.route('/filldb', methods=['GET'])
@@ -91,6 +106,8 @@ def create_app():
         db.create_all()
 
     return app
+
+
 
 def attachCookie(response):
     user_id = request.cookies.get('user_id')

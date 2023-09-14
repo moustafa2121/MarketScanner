@@ -192,3 +192,11 @@ def addProductItem_string(stringValue, itemType, product, commit=True):
         return productItem
     else:
         return existingItem
+
+def getProductsCount():
+    return len(Product.query.all())
+
+def getProducts(start, end):
+
+    return Product.query.all()[start:end]
+    
