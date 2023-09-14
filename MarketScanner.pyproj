@@ -56,7 +56,6 @@
     <Content Include="templates\index.html">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="static\vape-shop-dubai.json" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="FlaskEnv\">

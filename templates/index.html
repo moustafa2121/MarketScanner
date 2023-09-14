@@ -47,18 +47,21 @@
                     {% endif %}
 
                     <!-- flavor -->
-                    {% if item.flavor|length > 0 %}
-                    <!-- todo: loop over it -->
-                    <td class="flavorColumn">{{item.flavor.0}}</td>
+                    {% if item.getFlavors()|length > 0 %}
+                    <td class="flavorColumn">
+                        {% for flav in item.getFlavors()%}
+                        {{ flav }}{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                    </td>
                     {% else %}
                     <td class="flavorColumn emptyCell">{{constantsValues.noDataVariable}}</td>
                     {% endif %}
 
                     <!-- nicotine level -->
-                    {% if item.nic|length > 0 %}
+                    {% if item.getNics()|length > 0 %}
                     <td class="nicColumn centerText">
-                        {% for nicLvl in item.nic %}
-                        {{ nicLvl.0.0 }}{% if not loop.last %},{% endif %}
+                        {% for nicLvl in item.getNics() %}
+                        {{ nicLvl }}{% if not loop.last %},{% endif %}
                         {% endfor %}
                     </td>
                     {% else %}
@@ -66,10 +69,10 @@
                     {% endif %}
 
                     <!-- bottle size -->
-                    {% if item.size|length > 0 %}
+                    {% if item.getSizes()|length > 0 %}
                     <td class="sizeColumn centerText">
-                        {% for size in item.size %}
-                        {{ size.0.0 }}{% if not loop.last %},{% endif %}
+                        {% for size in item.getSizes() %}
+                        {{ size }}{% if not loop.last %},{% endif %}
                         {% endfor %}
                     </td>
                     {% else %}
@@ -77,9 +80,9 @@
                     {% endif %}
 
                     <!-- VG/PG -->
-                    {% if item.vgpg|length > 0 %}
-                    {% for vgpg in item.vgpg %}
-                    <td class="vgpgColumn centerText">{{vgpg.0}}/{{vgpg.1}}</td>
+                    {% if item.getVgpgs()|length > 0 %}
+                    {% for vgpg in item.getVgpgs() %}
+                    <td class="vgpgColumn centerText">{{vgpg}}</td>
                     {% endfor %}
                     {% else %}
                     <td class="vgpgColumn emptyCell centerText">{{constantsValues.noDataVariable}}</td>

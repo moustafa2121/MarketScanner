@@ -20,11 +20,11 @@ def create_app():
     @app.route('/', methods=['GET'])
     def homePage():
         import models
-        #get the data
-        data = dbExtract.openJsonDB("static/vape-shop-dubai.json")
         #used to fill empty cells
         constantsValues = {'noDataVariable' : 'No Data'}
 
+        #get the data
+        data = models.Product.query.all()[:15]
 
         response = make_response(render_template("index.html", lst=data[:15], constantsValues=constantsValues))
         
@@ -45,6 +45,11 @@ def create_app():
         #    db.session.delete(product)
         #db.session.commit()
         #print(models.Product.query.all())
+        #websiteObject = models.ItemWebsite.query.all()
+        #for obj in websiteObject:
+        #    db.session.delete(obj)
+        #db.session.commit()
+        #print(models.ItemWebsite.query.all())
 
         #2: create and save the db items
         #commit = True
@@ -52,7 +57,7 @@ def create_app():
         #                           metaValues['websiteBase'],
         #                           metaValues['websiteIcon'],
         #                           metaValues['numberOfItems'],
-        #                           'timestamp',
+        #                           metaValues['timestamp'],
         #                           commit)
 
         ##add the items
@@ -69,14 +74,7 @@ def create_app():
         #    [models.addProductItem_integer(nic, models.ProductItemType.nic, productTmp, commit) for nic in item['nic']]
         #    [models.addProductItem_integer(size, models.ProductItemType.size, productTmp, commit) for size in item['size']]
         #    [models.addProductItem_string(str(vgpg), models.ProductItemType.vgpg, productTmp, commit) for vgpg in item['vgpg']]
-
-
-        #products = models.Product.query.all()
-        #for product in products:
-        #    db.session.delete(product)
-        #db.session.commit()
-        #print(models.Product.query.all())
-
+                   
         return "olo"
     
 

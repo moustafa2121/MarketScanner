@@ -1,5 +1,4 @@
 from app import db
-from sqlalchemy.orm import relationship
 from enum import Enum
 
 wishlist_table = db.Table(
@@ -29,8 +28,6 @@ def userExists(name):
 def addUser(name):
     db.session.add(UserModel(name=name))
     db.session.commit()
-
-ProductItemType = Enum("Type", ['flavor', 'nic', 'size', 'vgpg'])
 
 class ItemWebsite(db.Model):
     __tablename__ = 'itemWebsite'
@@ -68,6 +65,7 @@ def addWebsite(name, baseUrl, icon, numberOfItems, timeStamp, commit=True):
     else:
         return existingWebsite
 
+ProductItemType = Enum("Type", ['flavor', 'nic', 'size', 'vgpg'])
 
 class Product(db.Model):
     __tablename__ = "product"
@@ -82,6 +80,18 @@ class Product(db.Model):
     items = db.relationship('ProductItem', back_populates='product')
     users = db.relationship('UserModel', secondary=wishlist_table, back_populates='wishlist')
 
+    def getItemsByType(self, itemType):
+        return [item for item in self.items if item.itemType == itemType]
+
+    def getFlavors(self):
+        return self.getItemsByType(ProductItemType.flavor)
+    def getNics(self):
+        return self.getItemsByType(ProductItemType.nic)
+    def getSizes(self):
+        return self.getItemsByType(ProductItemType.size)
+    def getVgpgs(self):
+        return self.getItemsByType(ProductItemType.vgpg)
+
     def __init__(self, itemLink, name, productImageLink, brand, website):
         self.itemLink = itemLink
         self.name = name
@@ -92,10 +102,7 @@ class Product(db.Model):
     def __str__(self):
         item_lines = []
 
-        # Categorize items and add them to the appropriate list
         itemsLst = [item.value for item in self.items if isinstance(item, ProductItem)]
-
-        # Add each type of item to the item_lines list
         if itemsLst:
             item_lines.append("Items:")
             item_lines.extend(itemsLst)
@@ -109,6 +116,18 @@ class Product(db.Model):
                f"Items:\n" \
                f"{item_lines}"
 
+
+def addProduct(itemLink, name, productImageLink, brand, website, commit=True):
+    existingProduct = Product.query.filter_by(itemLink=itemLink).first()
+
+    if existingProduct is None:
+        product = Product(itemLink, name, productImageLink, brand, website)
+        db.session.add(product)
+        if commit:
+            db.session.commit()
+        return product
+    else:
+        return existingProduct
 
 class ProductItem(db.Model):
     __tablename__ = 'product_item'
@@ -134,6 +153,9 @@ class ProductItem_integer(ProductItem):
         super().__init__(itemType, product)
         self.integerValue = integerValue
 
+    def __str__(self):
+        return str(self.integerValue)
+
 class ProductItem_string(ProductItem):
     __tablename__ = 'product_item_string'
     __mapper_args__ = { 'polymorphic_identity': 'product_item_string', }
@@ -143,20 +165,10 @@ class ProductItem_string(ProductItem):
         super().__init__(itemType, product)
         self.stringValue = stringValue
 
-def addProduct(name, itemLink, productImageLink, brand, website, commit=True):
-    existingProduct = Product.query.filter_by(itemLink=itemLink).first()
+    def __str__(self):
+        return self.stringValue
+  
 
-    if existingProduct is None:
-        product = Product(itemLink, name, productImageLink, brand, website)
-        db.session.add(product)
-        if commit:
-            db.session.commit()
-        return product
-    else:
-        return existingProduct
-    
-
-    
 def addProductItem_integer(integerValue, itemType, product, commit=True):
     existingItem = ProductItem_integer.query.filter_by(integerValue=integerValue, 
                                                      product=product).first()
