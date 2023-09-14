@@ -47,6 +47,9 @@
     <Content Include="static\loadPage.js">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="static\main.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="static\style.css">
       <SubType>Code</SubType>
     </Content>

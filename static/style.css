@@ -34,12 +34,46 @@ main {
 /* the filter and pagination for the table*/
 #tableFilterSection {
     padding: 0;
-    margin: 0;
-    height: 10vh;
+    height: 5vh;
+    margin: 0 10vw 5vh 10vw;
+    display: grid;
+    grid-template-columns: 65% 10% 25%;
+}
+#resultsElement {
+    display: inline-block;
+    margin-top: 7px;
 }
 
 #paginationHolder {
-    margin: 0 10vw 0 10vw;
+    display: inline-block;
+}
+ul {
+    margin: 0;
+    list-style: none;
+}
+.disabled{
+    cursor:default !important;
+    pointer-events:none;
+    color:gray;
+}
+.paginationList a {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+    cursor:pointer;
+}
+/* Style the active/current link */
+#innerPagesHolder .active {
+    background-color: dimgray;
+    color: white;
+    pointer-events:none;
+}
+
+/* Add a grey background color on mouse-over */
+.paginationList a:hover:not(.active) {
+    background-color: #ddd;
 }
 
 /* the table holder*/
@@ -87,7 +121,7 @@ thead tr th span {
     z-index: 2;
     height: 36px;
     display: inline-block;
-    background-color: #BBA151 !important;
+    background-color: #5C7DFD !important;
     padding-top: 7px;
     text-align: center;
     align-content: center;

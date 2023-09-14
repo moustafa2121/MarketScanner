@@ -15,11 +15,14 @@
     <meta charset="utf-8">
 </head>
 <body class="bg-body-tertiary">
-    <div class="navbar navbar-expand-lg bg-body-tertiary">
+    <header class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid titleContainer">
             <h1 id="navBarTitle" class="navbar-brand">Vape Finder</h1>
         </div>
-    </div>
+    </header>
+
+    <!-- holds the total number of pages. not displayed used by main.js -->
+    <div style="display:none" id="totalPagesHolder">{{constantsValues.totalPages}}</div>
 
     <!-- modal for the zoom-in image -->
     <div style="display:none" id="imgModal" class="modal">

@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 import dbExtract
 from flask import Flask, render_template
 from flask import request, make_response
-import uuid
+import uuid, math
 
 #db reference
 db = SQLAlchemy()
@@ -21,12 +21,21 @@ def create_app():
     def homePage():
         import models
         #used to fill empty cells
-        constantsValues = {'noDataVariable' : 'No Data'}
 
         #get the data
-        data = models.Product.query.all()[:15]
+        dataRangeStart = 0
+        dataRangeEnd = 15
+        data = models.Product.query.all()
+        dataToSend = data[dataRangeStart:dataRangeEnd]
+        
+        itemsPerPage = 15
+        totalPages = math.ceil(len(data)/itemsPerPage)
+        constantsValues = {'noDataVariable':'No Data',
+                           "itemsPerPage":itemsPerPage,
+                           "totalPages":totalPages,
+                           "totalItems":len(data)}
 
-        response = make_response(render_template("index.html", lst=data[:15], constantsValues=constantsValues))
+        response = make_response(render_template("index.html", lst=dataToSend, constantsValues=constantsValues))
         
         #check cookie, if needed
         attachCookie(response)
