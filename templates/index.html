@@ -32,9 +32,12 @@
             <tbody>
                 {% for item in lst %}
                 <tr>
+                    <!-- image -->
                     <td class="imgColumn">
                         <img class="img-thumbnail" src="{{item.productImageLink}}">
                     </td>
+
+                    <!-- name -->
                     <td class="nameColumn"><a href="{{item.itemLink}}" class="link-dark" target="_blank">{{item.name}}</a></td>
 
                     <!-- brand -->

@@ -33,9 +33,21 @@ const _ = (function () {
         img.addEventListener("click", function() {
             modal.style.display = "block";
             modalImg.src = this.src;
-            //give some time till setting it to true so the modal can pop up
+            //give some time till activating so the modal can pop up
             //if set true immediately it will deactivate due to the document click listener
             setTimeout(() => { modalActive = true; }, 100);
         });
     }
+})();
+
+const enablePagination = (function () {
+    const paginationHolder = document.getElementById("paginationHolder");
+
+    return function (enable) {
+        if (!enable)
+            paginationHolder.classList.add("disabled")
+        else
+            paginationHolder.classList.remove("disabled")
+    }
+
 })();

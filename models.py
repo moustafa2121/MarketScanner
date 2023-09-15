@@ -1,5 +1,6 @@
 from app import db
 from enum import Enum
+from sqlalchemy_serializer import SerializerMixin
 
 wishlist_table = db.Table(
     'wishlist',
@@ -67,7 +68,7 @@ def addWebsite(name, baseUrl, icon, numberOfItems, timeStamp, commit=True):
 
 ProductItemType = Enum("Type", ['flavor', 'nic', 'size', 'vgpg'])
 
-class Product(db.Model):
+class Product(db.Model, SerializerMixin):
     __tablename__ = "product"
     itemLink = db.Column(db.String(400), primary_key=True)
     name = db.Column(db.String(255))
@@ -81,7 +82,7 @@ class Product(db.Model):
     users = db.relationship('UserModel', secondary=wishlist_table, back_populates='wishlist')
 
     def getItemsByType(self, itemType):
-        return [item for item in self.items if item.itemType == itemType]
+        return [item.__str__() for item in self.items if item.itemType == itemType]
 
     def getFlavors(self):
         return self.getItemsByType(ProductItemType.flavor)
@@ -102,7 +103,9 @@ class Product(db.Model):
     def __str__(self):
         item_lines = []
 
-        itemsLst = [item.value for item in self.items if isinstance(item, ProductItem)]
+        itemsLst = [item.integerValue for item in self.items if isinstance(item, ProductItem_integer)]
+        itemsLst += [item.stringValue for item in self.items if isinstance(item, ProductItem_string)]
+
         if itemsLst:
             item_lines.append("Items:")
             item_lines.extend(itemsLst)
@@ -193,10 +196,21 @@ def addProductItem_string(stringValue, itemType, product, commit=True):
     else:
         return existingItem
 
+#fetchers
 def getProductsCount():
     return len(Product.query.all())
 
 def getProducts(start, end):
-
     return Product.query.all()[start:end]
+
+def productSerializer(item):
+    result = item.to_dict(rules=('-website', '-users', '-items'))
+    #since SerializerMixin mixin doesn't work with inherited models,
+    #we will translate them to a dict manually
+    result['flavor'] = item.getFlavors()
+    result['nic'] = item.getNics()
+    result['size'] = item.getSizes()
+    result['vgpg'] = item.getVgpgs()
+    return result
+
     

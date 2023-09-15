@@ -47,15 +47,17 @@ def create_app():
     @app.route('/moredata/<pageNumber>', methods=['GET'])
     def getMoreItems(pageNumber):
         import models
-
-        print("called: ", pageNumber)
-        pageNumber = int(pageNumber)
-        dataRangeStart, dataRangeEnd = dataRangerFinder(pageNumber)
+        dataRangeStart, dataRangeEnd = dataRangerFinder(int(pageNumber))
         products = models.getProducts(dataRangeStart, dataRangeEnd)
         
-        return json.dumps({"returnValue":"returnValue"})
+        #serialize
+        resultsList = []
+        for product in products:
+            resultsList.append(models.productSerializer(product))
 
-        #if invalid go to homepage
+        return json.dumps({"returnValue": resultsList})
+        
+        #if invalid redirect to homepage
 
     #make a request to populate the DB with a website
     @app.route('/filldb', methods=['GET'])
