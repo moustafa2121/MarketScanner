@@ -92,6 +92,14 @@ class Product(db.Model, SerializerMixin):
         return self.getItemsByType(ProductItemType.size)
     def getVgpgs(self):
         return self.getItemsByType(ProductItemType.vgpg)
+    def getWebIcon(self):
+        if self.website:
+            return self.website.icon
+        return None
+    def getWebUrl(self):
+        if self.website:
+            return self.website.baseUrl
+        return None
 
     def __init__(self, itemLink, name, productImageLink, brand, website):
         self.itemLink = itemLink
@@ -211,6 +219,8 @@ def productSerializer(item):
     result['nic'] = item.getNics()
     result['size'] = item.getSizes()
     result['vgpg'] = item.getVgpgs()
+    result['icon'] = item.getWebIcon()
+    result['baseUrl'] = item.getWebUrl()
     return result
 
     

@@ -54,7 +54,6 @@ def create_app():
         resultsList = []
         for product in products:
             resultsList.append(models.productSerializer(product))
-
         return json.dumps({"returnValue": resultsList})
         
         #if invalid redirect to homepage

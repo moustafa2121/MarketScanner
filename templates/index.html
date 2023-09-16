@@ -3,7 +3,9 @@
 {% block bodyblock %}
 <section id="tableFilterSection">
     <span id="filter"></span>
-    <span id="resultsElement">{{constantsValues.totalItems}} items found</span>
+    <span id="resultsElement">
+        {{ constantsValues.totalItems }} item{{ 's' if constantsValues.totalItems != 1 else '' }} found
+    </span>
     <div id="paginationHolder">
         <ul class="paginationList">
             <li class="pageItem"><a id="prevPage">&lt;</a></li>
@@ -16,6 +18,7 @@
 </section>
 
 <section id="tableContainerSection">
+    <div style="display:none" id="loadingSpinner" class="spinner-grow text-dark"></div>
     <div id="tableContainerDiv">
         <table class="table-hover align-middle">
             <thead>
@@ -33,12 +36,15 @@
                 {% for item in lst %}
                 <tr>
                     <!-- image -->
-                    <td class="imgColumn">
+                    <td class="imgColumn centerText">
                         <img class="img-thumbnail" src="{{item.productImageLink}}">
                     </td>
 
                     <!-- name -->
-                    <td class="nameColumn"><a href="{{item.itemLink}}" class="link-dark" target="_blank">{{item.name}}</a></td>
+                    <td class="nameColumn">
+                        <a target="_blank" href="{{item.getWebUrl()}}"><img class="webIcon" src="{{item.getWebIcon()}}"/></a>
+                        <a href="{{item.itemLink}}" class="link-dark" target="_blank">{{item.name}}</a>
+                    </td>
 
                     <!-- brand -->
                     {% if item.brand|length > 0 %}

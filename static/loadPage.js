@@ -75,7 +75,7 @@ function setThePagination(pageNumber, paginationArray) {
         //set the value
         liEleA.textContent = page;
         //if the elment is the default value (i.e. ...) then disable it
-        if (page === paginationManager.palceHolderValue)
+        if (page === paginationManager.placeHolderValue)
             liEleA.classList.add('disabled')
         else//else give it an event listener
             setPageButtonEventListener(liEleA);

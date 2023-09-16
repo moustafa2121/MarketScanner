@@ -76,12 +76,23 @@ ul {
     background-color: #ddd;
 }
 
+
 /* the table holder*/
 #tableContainerSection {
     height: 100%;
     margin: 0 10vw 0 10vw;
     position: relative;
 }
+
+#loadingSpinner {
+    position: absolute;
+    /*left: 40vw;*/
+    left:40%;
+    top:20%;
+    width: 200px;
+    height: 200px;
+}
+
 /* contains the table to create the scroll effect */
 #tableContainerDiv {
     height: 100%;
@@ -137,29 +148,32 @@ thead tr th span {
 .imgColumn {
     width: 5%;
 }
-
 .nameColumn {
     width: 40%;
 }
-
+.nameColumn a{
+    text-underline-offset: 0.1em;
+}
 .brandColumn {
     width: 15%;
 }
-
 .flavorColumn {
     width: 18.75%;
 }
-
 .nicColumn {
     width: 8%;
 }
-
 .sizeColumn {
     width: 6%;
 }
-
 .vgpgColumn {
     width: 8%;
+}
+
+.webIcon {
+    width: 28px;
+    height: 28px;
+    margin-right:7px;
 }
 
 /* for each cell of the table*/
@@ -203,10 +217,9 @@ table tr:hover {
     cursor: pointer;
     transition: 0.3s;
 }
-
-    .imgColumn img:hover {
-        opacity: 0.7;
-    }
+.imgColumn img:hover {
+    opacity: 0.7;
+}
 
 /* modal that displays and zooms the iamge when the image
     is clicked on
@@ -266,6 +279,7 @@ table tr:hover {
     font-size: 40px;
     font-weight: bold;
     transition: 0.3s;
+    cursor:pointer;
 }
 
 #imgModalClose:hover #imgModalClose:focus {

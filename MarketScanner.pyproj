@@ -53,6 +53,7 @@
     <Content Include="static\style.css">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="static\vapeFavIcon.png" />
     <Content Include="templates\base.html">
       <SubType>Code</SubType>
     </Content>

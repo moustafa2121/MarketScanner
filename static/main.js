@@ -66,9 +66,10 @@ class Product {
         this.nic = item.nic.length === 0 ? 'No Data' : item.nic;
         this.size = item.size.length === 0 ? 'No Data' : item.size;
         this.vgpg = item.vgpg.length === 0 ? 'No Data' : item.vgpg;
+        this.icon = item.icon;
+        this.baseUrl = item.baseUrl;
     }
 }
-
 
 //this resets on refreshing the page, filter, and sort
 //the dispalyTable is set to false on the first page load since we do not want
@@ -113,10 +114,9 @@ function getTableData(pageNumber) {
         });
 }
 
-
 //takes the tableProducts object for one page
 //and displays them by replacing the values of the rows in the table
-function displayTableRows(tableProducts) {
+async function displayTableRows(tableProducts) {
     const tableRows = document.querySelectorAll('tbody tr');
     //for each product to display (row)
     tableProducts.products.forEach((_, i) => {
@@ -125,45 +125,33 @@ function displayTableRows(tableProducts) {
         const currentProduct = tableProducts.products[i];
         currentRow.className = 'visibleRow';
 
+        //the image of the item
         currentRow.querySelector('.imgColumn img').setAttribute('src', currentProduct.productImageLink);
-        currentRow.querySelector('.nameColumn a').textContent = currentProduct.name;
-        currentRow.querySelector('.nameColumn a').setAttribute("href", currentProduct.itemLink);
-        currentRow.querySelector('.brandColumn').textContent = currentProduct.brand;
 
-        if (currentProduct.flavor === 'No Data') {
-            currentRow.querySelector('.flavorColumn').textContent = 'No Data';
-            currentRow.querySelector('.flavorColumn').className = "flavorColumn emptyCell";
-        }
-        else {
-            currentRow.querySelector('.flavorColumn').textContent = currentProduct.flavor.join(', ');
-            currentRow.querySelector('.flavorColumn').className = "flavorColumn";
-        }
+        //the icon of the store
+        currentRow.querySelectorAll('.nameColumn a')[0].setAttribute("href", currentProduct.baseUrl);
+        currentRow.querySelector('.nameColumn a img').setAttribute("src", currentProduct.icon);
 
-        if (currentProduct.nic === 'No Data') {
-            currentRow.querySelector('.nicColumn').textContent = 'No Data';
-            currentRow.querySelector('.nicColumn').className = 'nicColumn emptyCell centerText';
-        }
-        else {
-            currentRow.querySelector('.nicColumn').textContent = currentProduct.nic.join(', ');
-            currentRow.querySelector('.nicColumn').className = 'nicColumn centerText';
-        }
-        if (currentProduct.size === 'No Data') {
-            currentRow.querySelector('.sizeColumn').textContent = 'No Data';
-            currentRow.querySelector('.sizeColumn').className = 'sizeColumn emptyCell centerText';
-        }
-        else {
-            currentRow.querySelector('.sizeColumn').textContent = currentProduct.size.join(', ');
-            currentRow.querySelector('.sizeColumn').className = 'sizeColumn centerText';
-        }
+        //the name of the product and its link
+        currentRow.querySelectorAll('.nameColumn a')[1].textContent = currentProduct.name;
+        currentRow.querySelectorAll('.nameColumn a')[1].setAttribute("href", currentProduct.itemLink);
 
-        if (currentProduct.vgpg === 'No Data') {
-            currentRow.querySelector('.vgpgColumn').textContent = 'No Data';
-            currentRow.querySelector('.vgpgColumn').className = 'vgpgColumn emptyCell centerText';
-        }
-        else {
-            currentRow.querySelector('.vgpgColumn').textContent = currentProduct.vgpg.join(', ');
-            currentRow.querySelector('.vgpgColumn').className = 'vgpgColumn centerText';
-            }
+        //other items
+        displayCell(currentProduct.brand, currentRow.querySelector('.brandColumn'),
+                    "brandColumn emptyCell",
+                    "brandColumn");
+        displayCell(currentProduct.flavor, currentRow.querySelector('.flavorColumn'),
+                    "flavorColumn emptyCell",
+                    "flavorColumn");
+        displayCell(currentProduct.nic, currentRow.querySelector('.nicColumn'),
+                    'nicColumn emptyCell centerText',
+                    'nicColumn centerText');
+        displayCell(currentProduct.size, currentRow.querySelector('.sizeColumn'),
+                    'sizeColumn emptyCell centerText',
+                    'sizeColumn centerText');
+        displayCell(currentProduct.vgpg, currentRow.querySelector('.vgpgColumn'),
+                    'vgpgColumn emptyCell centerText',
+                    'vgpgColumn centerText');
     });
 
     //hide rows that exceed the available products to display
@@ -173,4 +161,21 @@ function displayTableRows(tableProducts) {
     if (tableProducts.products.length < tableRows.length)
         for (let i = tableProducts.products.length; i < tableRows.length; i++)
             tableRows[i].className = 'hiddenRow';
+}
+
+//used to display the data of a cell
+//sets it to No Data if it is empty
+//sets the associate classes
+function displayCell(passedProduct, currentCell, classListNeg, classListPos) {
+    if (passedProduct === 'No Data') {
+        currentCell.textContent = 'No Data';
+        currentCell.className = classListNeg;
+    }
+    else {
+        if (typeof(passedProduct) === "string")
+            currentCell.textContent = passedProduct;
+        else
+            currentCell.textContent = passedProduct.join(', ');
+        currentCell.className = classListPos;
+    }
 }
