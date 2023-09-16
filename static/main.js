@@ -1,4 +1,50 @@
-//holds a list of Product objects and the page 
+//holds the tables that are adjacent to the current table
+//this is to ensure that the pages that are visible to the
+//user can be loaded quickly since they are saved locally
+//handles loading the adjacent tables, storing them, removing them,
+//and fetching them if available
+const adjacentTablesHandler = (function () {
+    //holds the tableProducts in an array
+    let tableProductsArr = []
+    return {
+        //get the table product if available in the frontend memory
+        getTableProduct: (pageNumber) => {
+            for (const tableProduct of tableProductsArr)
+                if (tableProduct.pageNumber == pageNumber)
+                    return tableProduct
+            return null;
+        },
+        //used everytime the user navigates to a new page
+        //adds and removes the adjacent table as needed and stores them
+        loadAdjacentTables: async (paginationArray) => {
+            //trim the pagination array to remove the dots
+            //this array determines what tables to fetch as it represents
+            //the pages button visible in the pagination buttons 
+            //for the user to navigate
+            paginationArray = paginationArray.filter(item => item !== '...')
+
+            //the intersection between the pagination array and the
+            //productTables stored. the intersection represents pages
+            //that are not to be added nor removed
+            const intersection = paginationArray.filter(item1 => tableProductsArr.some(item2 => item2.pageNumber === item1));
+
+            //intersection applied to the tableProducts. 
+            //items not in intersection will be discarded
+            tableProductsArr = tableProductsArr.filter(item => paginationArray.includes(item.pageNumber));
+            //get the items that are only in the paginationArray but 
+            //not in intersection, they will be fetched and added
+            for (const page of paginationArray)
+                //if it is not in the intersection, fetch and add
+                if (!intersection.includes(page))
+                    tableProductsArr.push(await getTableData(page));
+        },
+        //a reference to to the tableProductsArr
+        tableProductsArr: () => { return tableProductsArr; },
+    };
+})();
+
+
+//holds a list of Product objects and the page
 //number of the table they belong to
 class TableProducts {
     constructor(pageNumber, products) {
@@ -25,34 +71,42 @@ class Product {
 
 
 //this resets on refreshing the page, filter, and sort
-async function loadTheTable(pageNumber) {
-    //fecth data
-    //todo: check first if the page data is in memory
-
-    //disable page navigation fetching and displaying
+//the dispalyTable is set to false on the first page load since we do not want
+//to dispaly the first page since it is already loaded
+//however we want to invoke the adjacentTablesHolder.loadAdjacentTables
+async function loadTheTable(pageNumber, paginationArray, displayTable=true) {
+    //disable page navigation during fetching and displaying
     enablePagination(false);
-    const tableProducts = await getTableData(pageNumber);
-    //display the table
-    displayTable(tableProducts);
+
+    //for most cakes the displayTable is true
+    if (displayTable) {
+        //try to get tableProduct from the frontend stroage
+        let tableProducts = adjacentTablesHandler.getTableProduct(pageNumber)
+        //if not found, then fetch the table, wait the response
+        if (!tableProducts)
+            tableProducts = await getTableData(pageNumber);
+
+        //display the table
+        displayTableRows(tableProducts);
+    }
+    //load the adjacent tables as needed
+    await adjacentTablesHandler.loadAdjacentTables(paginationArray);
+
     //re-enable the pagination
     enablePagination(true);
-
-
 }
 
+//given a page number, it will fetch data corresponding to it
 function getTableData(pageNumber) {
     return fetch(`/moredata/${pageNumber}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
         },
-        //body: JSON.stringify({ test: `this is test ${pageNumber}` })
     })
         .then(response => response.json())
         .then(data => {
-            console.log("got response fetching");
-            data = data['returnValue']
-            return new TableProducts(pageNumber, data);
+            return new TableProducts(pageNumber, data['returnValue']);
         })
         .catch(error => {
             console.log("error fetching:", error);
@@ -62,7 +116,7 @@ function getTableData(pageNumber) {
 
 //takes the tableProducts object for one page
 //and displays them by replacing the values of the rows in the table
-function displayTable(tableProducts) {
+function displayTableRows(tableProducts) {
     const tableRows = document.querySelectorAll('tbody tr');
     //for each product to display (row)
     tableProducts.products.forEach((_, i) => {

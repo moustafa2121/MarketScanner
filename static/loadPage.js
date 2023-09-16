@@ -9,56 +9,61 @@ paginationManager = (function () {
     const totalPages = parseInt(document.getElementById("totalPagesHolder").textContent);
     //used for pages that are beyond the current page to indicate
     //there are pages inbetween
-    const palceHolderValue = '...'
+    const placeHolderValue = '...'
 
-    return () => {
-        return {
-            currentPage: pageNumber,
-            setCurrentPage: (passedValue) => { pageNumber = passedValue; },
-            totalPages: totalPages,
-            palceHolderValue: palceHolderValue,
-            pageInc: () => { return pageNumber += 1; },//increment the current page
-            pageDec: () => { return pageNumber -= 1; },//decremeent the current page
-        }
+    return {
+        currentPage: () => { return pageNumber },
+        setCurrentPage: (passedValue) => { pageNumber = passedValue; },
+        totalPages: totalPages,
+        placeHolderValue: placeHolderValue,
+        pageInc: () => { return pageNumber += 1; },//increment the current page
+        pageDec: () => { return pageNumber -= 1; },//decremeent the current page
     }
 })();
 
 //on page load
 window.addEventListener("load", () => {
     //set the pagination depending on the current page
-    setThePagination(paginationManager().currentPage, paginationManager().totalPages);
+    refreshTable(paginationManager.currentPage(), paginationManager.totalPages, displayTable=false);
 
     //set the event listener for the previous page and next page buttons
     document.getElementById("prevPage").addEventListener("click", () => {
         //decrement the current page
-        paginationManager().pageDec();
+        paginationManager.pageDec();
         //set the pagination
-        setThePagination(paginationManager().currentPage, paginationManager().totalPages);
+        refreshTable(paginationManager.currentPage(), paginationManager.totalPages);
     });
     document.getElementById("nextPage").addEventListener("click", () => {
-        paginationManager().pageInc();
-        setThePagination(paginationManager().currentPage, paginationManager().totalPages);
+        paginationManager.pageInc();
+        refreshTable(paginationManager.currentPage(), paginationManager.totalPages);
     });
 });
+
+//refreshes the table based on the changes in page number
+function refreshTable(pageNumber, totalPages, displayTable = true) {
+    //the array of values from the first to the last button
+    const paginationArray = paginationArrayFactory(pageNumber, totalPages);
+
+    //set the pagination
+    setThePagination(pageNumber, paginationArray);
+
+    //invoke the loading of table and the data of the 
+    //previous / next tables
+    loadTheTable(pageNumber, paginationArray, displayTable=displayTable);
+}
 
 //the function that handles the changes to the pages
 //it is invoked anytime a page button is clicked, or the
 //nextPage/prevPage buttons are clicked
 //it updates the pagination based on the new current page
-function setThePagination(pageNumber, totalPages) {
+function setThePagination(pageNumber, paginationArray) {
     //the parent of the pages buttons
     const ulPagination = document.getElementById("innerPagesHolder");
-    //the array of values from the first to the last button
-    const paginationArray = paginationArrayFactory(pageNumber, totalPages);
     //remove all previous page buttons
     while (ulPagination.firstChild)
         ulPagination.removeChild(ulPagination.lastChild);
 
-    //invoke the loading of table and the data of the 
-    //previous / next tables
-    loadTheTable(pageNumber);
-
-    //loop over the new page values
+    //loop over the new page buttons values
     for (page of paginationArray) {
         //new li and a elements
         const liEle = document.createElement("li");
@@ -70,7 +75,7 @@ function setThePagination(pageNumber, totalPages) {
         //set the value
         liEleA.textContent = page;
         //if the elment is the default value (i.e. ...) then disable it
-        if (page === paginationManager().palceHolderValue)
+        if (page === paginationManager.palceHolderValue)
             liEleA.classList.add('disabled')
         else//else give it an event listener
             setPageButtonEventListener(liEleA);
@@ -83,7 +88,7 @@ function setThePagination(pageNumber, totalPages) {
     //disable/enable the prevPage/nextPage buttons depending 
     //on whats the value of the new current page
     disableOnValue(document.getElementById("prevPage"), 1);
-    disableOnValue(document.getElementById("nextPage"), paginationManager().totalPages);
+    disableOnValue(document.getElementById("nextPage"), paginationManager.totalPages);
 }
 
 //sets a listener for the page buttons
@@ -91,9 +96,9 @@ function setPageButtonEventListener(pageEle) {
     pageEle.addEventListener("click", () => {
         if (!pageEle.classList.contains('active')) {
             //set the new current page
-            paginationManager().setCurrentPage(parseInt(pageEle.text));
+            paginationManager.setCurrentPage(parseInt(pageEle.text));
             //set the pagination
-            setThePagination(paginationManager().currentPage, paginationManager().totalPages);
+            refreshTable(paginationManager.currentPage(), paginationManager.totalPages);
         }
     });
 }
@@ -103,7 +108,7 @@ function setPageButtonEventListener(pageEle) {
 //the total max values of shown page buttons is 7 excluding
 //the prevPage/nextPage buttons
 function paginationArrayFactory(pageNumber, totalPages) {
-    const palceHolderValue = paginationManager().palceHolderValue;
+    const placeHolderValue = paginationManager.placeHolderValue;
     if (pageNumber > totalPages)//page number > total pages
         return 'bad pagination';
     if (totalPages <= 5)//total pages are 5 or less
@@ -118,7 +123,7 @@ function paginationArrayFactory(pageNumber, totalPages) {
         else if (pageNumber === 4)
             theCore = [1, 2].concat(theCore);
         else
-            theCore = [1, palceHolderValue].concat(theCore);
+            theCore = [1, placeHolderValue].concat(theCore);
 
         //for the end of the array
         if ((pageNumber + 3) === totalPages)
@@ -128,23 +133,21 @@ function paginationArrayFactory(pageNumber, totalPages) {
         else if ((pageNumber + 1) === totalPages)
             theCore = theCore.concat([]);
         else if (pageNumber === totalPages)
-            theCore = [1, palceHolderValue, totalPages - 2, totalPages - 1, totalPages]
+            theCore = [1, placeHolderValue, totalPages - 2, totalPages - 1, totalPages]
         else
-            theCore = theCore.concat([palceHolderValue, totalPages]);
+            theCore = theCore.concat([placeHolderValue, totalPages]);
 
         return theCore;
     }
 }
 
-
-//toggle disable for prevPage/nextPage buttons based on value
+//toggle disable for prevPage/nextPage buttons based on value of the page
 function disableOnValue(element, value) {
-    if (paginationManager().currentPage === value)
+    if (paginationManager.currentPage() === value)
         toggleDisabled(element, true);
     else
         toggleDisabled(element, false);
 }
-
 //toggle disable for prevPage/nextPage 
 function toggleDisabled(element, disable) {
     if (!element.classList.contains("disabled") && disable)

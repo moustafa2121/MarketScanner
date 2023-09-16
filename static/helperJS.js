@@ -42,12 +42,10 @@ const _ = (function () {
 
 const enablePagination = (function () {
     const paginationHolder = document.getElementById("paginationHolder");
-
     return function (enable) {
         if (!enable)
             paginationHolder.classList.add("disabled")
         else
             paginationHolder.classList.remove("disabled")
     }
-
 })();
