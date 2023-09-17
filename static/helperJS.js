@@ -7,28 +7,27 @@ const _ = (function () {
     const modalImg = document.getElementById("imgModalContent");
     let modalActive = false;
 
-    //when the user clicks on <span> (x), close the modal
-    imgModalClose.addEventListener("click", () => {
+    const closeModal = () => {
         modal.style.display = "none";
         modalActive = false;
+    }
+    //when the user clicks on <span> (x), close the modal
+    imgModalClose.addEventListener("click", () => {
+        closeModal();
     });
     //if a click happens on the document and the modal is open and
     //the click is not on the image, then close the modal
     document.addEventListener("click", event => {
-        if (modalActive && event.target.id !== "imgModalContent") {
-            modal.style.display = "none";
-            modalActive = false;
-        }
+        if (modalActive && event.target.id !== "imgModalContent")
+            closeModal();
     });
     //same as the above but for the escape key
     document.addEventListener('keydown', event => {
-        if (event.key == "Escape" && modalActive && event.target.id !== "imgModalContent"){
-            modal.style.display = "none";
-            modalActive = false;
-        }
+        if (event.key == "Escape" && modalActive)
+            closeModal();
     });
 
-    //loop over the images of the table
+    //loop over the images of the table and assign the listener to toggle the modal
     for (img of document.querySelectorAll(".imgColumn img")) {
         img.addEventListener("click", function() {
             modal.style.display = "block";
@@ -50,4 +49,14 @@ const enablePagination = (function () {
             paginationHolder.classList.remove("disabled")
         }
     }
+})();
+
+const filterHandler = (function () {
+    const filterButton = document.querySelector('#filterSortHolder button');
+    const modal = document.querySelector("#filterSortModal");
+    filterButton.addEventListener("click", () => {
+        //modal.style.display = "inline-block";
+    });
+
+
 })();

@@ -211,6 +211,9 @@ def getProductsCount():
 def getProducts(start, end):
     return Product.query.all()[start:end]
 
+def getAllProducts():
+    return Product.query.all()
+
 def productSerializer(item):
     result = item.to_dict(rules=('-website', '-users', '-items'))
     #since SerializerMixin mixin doesn't work with inherited models,
@@ -223,4 +226,8 @@ def productSerializer(item):
     result['baseUrl'] = item.getWebUrl()
     return result
 
-    
+#sorted and case insensitive
+def getBrandList(products):
+    brandSet = set()
+    [brandSet.add(product.brand.lower()) for product in products]
+    return sorted(list(map(lambda x: x.title(), list(brandSet))))

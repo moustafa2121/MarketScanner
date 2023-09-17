@@ -39,14 +39,25 @@ main {
     display: grid;
     grid-template-columns: 65% 10% 25%;
 }
+#filterSortHolder {
+    border: 1px solid black;
+}
+#filterSortHolder button{
+    margin-top:5px;
+    margin-left:10px;
+}
+
 #resultsElement {
     display: inline-block;
     margin-top: 7px;
+    border: 1px solid black;
 }
 
 #paginationHolder {
     display: inline-block;
+    border: 1px solid black;
 }
+
 ul {
     margin: 0;
     list-style: none;
@@ -259,7 +270,6 @@ table tr:hover {
         -webkit-transform: scale(1)
     }
 }
-
 @keyframes zoom {
     from {
         transform: scale(0)
@@ -294,6 +304,20 @@ table tr:hover {
         width: 100%;
     }
 }
+
+/* filter modal */
+#filterSortModal {
+    top:20vh;
+}
+
+#filterSortModal form label{
+    padding-bottom:0;
+    margin-bottom:0;
+}
+#filterSortModal form input {
+    width: 50%;
+}
+
 
 /* footer */
 footer {

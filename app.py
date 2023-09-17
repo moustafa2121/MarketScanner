@@ -15,15 +15,14 @@ def create_app():
     db.init_app(app)#instead of: db = SQLAlchemy(app)
     
     itemsPerPage = 15
-    
+        
     def dataRangerFinder(pageNumber):
         return (pageNumber-1) * itemsPerPage, pageNumber * itemsPerPage
 
     @app.route('/', methods=['GET'])
     def homePage():
         import models
-        #used to fill empty cells
-
+        
         #get the data
         dataRangeStart, dataRangeEnd = dataRangerFinder(1)
         
@@ -34,9 +33,11 @@ def create_app():
         constantsValues = {'noDataVariable':'No Data',
                            "itemsPerPage":itemsPerPage,
                            "totalPages":totalPages,
-                           "totalItems":totalItems}
+                           "totalItems":totalItems,}
+        filterValues = {"brandList":models.getBrandList(models.getAllProducts()),}
 
         response = make_response(render_template("index.html", lst=data,
+                                                 filterValues=filterValues,
                                                 constantsValues=constantsValues))
         
         #check cookie, if needed it will attach to the response
@@ -44,6 +45,7 @@ def create_app():
 
         return response
 
+    #todo: prevent users from calling it directly, only for fetchAPI
     @app.route('/moredata/<pageNumber>', methods=['GET'])
     def getMoreItems(pageNumber):
         import models
@@ -58,6 +60,7 @@ def create_app():
         
         #if invalid redirect to homepage
 
+  
     #make a request to populate the DB with a website
     @app.route('/filldb', methods=['GET'])
     def website():

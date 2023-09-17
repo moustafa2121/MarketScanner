@@ -179,3 +179,25 @@ function displayCell(passedProduct, currentCell, classListNeg, classListPos) {
         currentCell.className = classListPos;
     }
 }
+
+
+const filterFormHandler = (function () {
+    const filterForm = document.getElementById("filterForm");
+    const filterFormCloseButton = document.querySelector("#filterSortModal button.btn-close");
+
+    filterForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        console.log("submit");
+
+        const nameInput = filterForm.querySelector('#nameInput').value;
+        const brandInput = filterForm.querySelector('#brandInput').value;
+
+        console.log("Name: " + nameInput);
+        console.log("Brand: " + brandInput);
+
+        //todo: reset values
+        filterFormCloseButton.click();
+    });
+})();
+
+
