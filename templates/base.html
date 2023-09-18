@@ -49,23 +49,35 @@
                     <!-- brand select -->
                     <div class="mb-3">
                         <label for="brandInput" class="form-label">Brand</label>
-                        <!--<select class="form-select" id="brandInput">
+                        <select class="form-select" id="brandInput">
                             {% for brandOpt in filterValues.brandList %}
                             <option value='{{brandOpt}}'>{{brandOpt}}</option>
                             {% endfor %}
-                        </select>-->
+                        </select>
                     </div>
                     <!-- flavor search -->
                     <div class="mb-3">
                         <label for="flavorInput" class="form-label">Flavor</label>
                         <input type="text" class="form-control" id="flavorInput">
                     </div>
-                    <!-- nicotine select -->
+                    <!-- nicotine min/max -->
                     <div class="mb-3">
-                        <label for="brandInput" class="form-label">Nicotine</label>
-
+                        <label form-label">Nicotine</label><br />
+                        <label for="nicMin" class="form-label">Min</label>
+                        <input type="number" class="form-control" id="nicMin" min={{filterValues.nicMin}} max={{filterValues.nicMax}}>
+                        <label for="nicMax" class="form-label">Max</label>
+                        <input type="number" class="form-control" id="nicMax" min={{filterValues.nicMin}} max={{filterValues.nicMax}}>
                     </div>
-                    <div>Size</div>
+                    <!-- size select -->
+                    <div class="mb-3">
+                        <label for="sizeInput" class="form-label">Size</label>
+                        <select class="form-select" id="sizeInput">
+                            {% for brandOpt in filterValues.brandList %}
+                            <option value='{{brandOpt}}'>{{brandOpt}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <!-- vgpg select -->
                     <div>VG/PG</div>
 
                     <div class="modal-footer">

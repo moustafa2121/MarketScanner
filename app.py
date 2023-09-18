@@ -26,17 +26,24 @@ def create_app():
         #get the data
         dataRangeStart, dataRangeEnd = dataRangerFinder(1)
         
-        totalItems = models.getProductsCount()
+        #all the products as per filter/sort (if any)
+        allProducts = models.getAllProducts()
+        totalItems = len(allProducts)
 
-        data = models.getProducts(dataRangeStart, dataRangeEnd)
+        #data to be sent
+        dataInRange = models.getProducts(dataRangeStart, dataRangeEnd)
         totalPages = math.ceil(totalItems/itemsPerPage)
         constantsValues = {'noDataVariable':'No Data',
                            "itemsPerPage":itemsPerPage,
                            "totalPages":totalPages,
                            "totalItems":totalItems,}
-        filterValues = {"brandList":models.getBrandList(models.getAllProducts()),}
+        
+        nicList = models.getNicList(allProducts)
+        filterValues = {"brandList":models.getBrandList(allProducts),
+                        "nicMin":min(nicList),
+                        "nicMax":max(nicList),}
 
-        response = make_response(render_template("index.html", lst=data,
+        response = make_response(render_template("index.html", lst=dataInRange,
                                                  filterValues=filterValues,
                                                 constantsValues=constantsValues))
         

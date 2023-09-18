@@ -204,16 +204,6 @@ def addProductItem_string(stringValue, itemType, product, commit=True):
     else:
         return existingItem
 
-#fetchers
-def getProductsCount():
-    return len(Product.query.all())
-
-def getProducts(start, end):
-    return Product.query.all()[start:end]
-
-def getAllProducts():
-    return Product.query.all()
-
 def productSerializer(item):
     result = item.to_dict(rules=('-website', '-users', '-items'))
     #since SerializerMixin mixin doesn't work with inherited models,
@@ -226,8 +216,31 @@ def productSerializer(item):
     result['baseUrl'] = item.getWebUrl()
     return result
 
+#fetchers
+def getProducts(start, end):
+    return Product.query.limit(end-start).offset(start).all()
+
+def getAllProducts():
+    return Product.query.all()
+
 #sorted and case insensitive
 def getBrandList(products):
     brandSet = set()
     [brandSet.add(product.brand.lower()) for product in products]
     return sorted(list(map(lambda x: x.title(), list(brandSet))))
+
+def getNicList(products):
+    nicSet = set()
+    for product in products:
+        for item in product.items:
+            if item.itemType == ProductItemType.nic:
+                nicSet.add(item.integerValue)
+    return sorted(list(nicSet))
+
+def getSizeList(products):
+    nicSet = set()
+    for product in products:
+        for item in product.items:
+            if item.itemType == ProductItemType.nic:
+                nicSet.add(item.integerValue)
+    return sorted(list(nicSet))

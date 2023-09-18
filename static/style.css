@@ -317,7 +317,13 @@ table tr:hover {
 #filterSortModal form input {
     width: 50%;
 }
-
+#filterSortModal form #nicMin, #filterSortModal form #nicMax{
+    display:inline-block;
+    width: 25%;
+}
+#filterSortModal form #nicMax{
+    margin-left:3px;
+}
 
 /* footer */
 footer {
