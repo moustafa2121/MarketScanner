@@ -32,61 +32,8 @@
         <img id="imgModalContent">
     </div>
 
-    <!-- modal for filter -->
-    <div class="modal fade" id="filterSortModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title fs-5" id="modalLabel">Filter</h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form class="modal-body" method="get" id="filterForm">
-                    <!-- name search -->
-                    <div class="mb-3">
-                        <label for="nameInput" class="form-label">Name</label>
-                        <input type="text" class="form-control" id="nameInput">
-                    </div>
-                    <!-- brand select -->
-                    <div class="mb-3">
-                        <label for="brandInput" class="form-label">Brand</label>
-                        <select class="form-select" id="brandInput">
-                            {% for brandOpt in filterValues.brandList %}
-                            <option value='{{brandOpt}}'>{{brandOpt}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <!-- flavor search -->
-                    <div class="mb-3">
-                        <label for="flavorInput" class="form-label">Flavor</label>
-                        <input type="text" class="form-control" id="flavorInput">
-                    </div>
-                    <!-- nicotine min/max -->
-                    <div class="mb-3">
-                        <label form-label">Nicotine</label><br />
-                        <label for="nicMin" class="form-label">Min</label>
-                        <input type="number" class="form-control" id="nicMin" min={{filterValues.nicMin}} max={{filterValues.nicMax}}>
-                        <label for="nicMax" class="form-label">Max</label>
-                        <input type="number" class="form-control" id="nicMax" min={{filterValues.nicMin}} max={{filterValues.nicMax}}>
-                    </div>
-                    <!-- size select -->
-                    <div class="mb-3">
-                        <label for="sizeInput" class="form-label">Size</label>
-                        <select class="form-select" id="sizeInput">
-                            {% for brandOpt in filterValues.brandList %}
-                            <option value='{{brandOpt}}'>{{brandOpt}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <!-- vgpg select -->
-                    <div>VG/PG</div>
-
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Apply</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <!-- filter form (modal) -->
+    {% include 'filterForm.html' %}
 
     <main>
         {% block bodyblock %}

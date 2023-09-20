@@ -229,18 +229,23 @@ def getBrandList(products):
     [brandSet.add(product.brand.lower()) for product in products]
     return sorted(list(map(lambda x: x.title(), list(brandSet))))
 
+#todo: delete
 def getNicList(products):
     nicSet = set()
     for product in products:
-        for item in product.items:
-            if item.itemType == ProductItemType.nic:
-                nicSet.add(item.integerValue)
+        [nicSet.add(item.integerValue) for item in product.items if item.itemType == ProductItemType.nic]
     return sorted(list(nicSet))
 
-def getSizeList(products):
-    nicSet = set()
+
+def getItemsFilterList(products):
+    nicSet, sizeSet, vgpgSet, websiteSet = set(), set(), set(), set()
     for product in products:
+        websiteSet.add(product.website.name)
         for item in product.items:
             if item.itemType == ProductItemType.nic:
                 nicSet.add(item.integerValue)
-    return sorted(list(nicSet))
+            elif item.itemType == ProductItemType.size:
+                sizeSet.add(item.integerValue)
+            elif item.itemType == ProductItemType.vgpg:
+                vgpgSet.add(item.stringValue)
+    return sorted(list(nicSet)), sorted(list(sizeSet)), sorted(list(vgpgSet)), sorted(list(websiteSet))

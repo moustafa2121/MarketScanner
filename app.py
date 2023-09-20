@@ -23,10 +23,9 @@ def create_app():
     def homePage():
         import models
         
-        #get the data
+        #get the data range
         dataRangeStart, dataRangeEnd = dataRangerFinder(1)
         
-        #all the products as per filter/sort (if any)
         allProducts = models.getAllProducts()
         totalItems = len(allProducts)
 
@@ -37,20 +36,32 @@ def create_app():
                            "itemsPerPage":itemsPerPage,
                            "totalPages":totalPages,
                            "totalItems":totalItems,}
-        
-        nicList = models.getNicList(allProducts)
-        filterValues = {"brandList":models.getBrandList(allProducts),
-                        "nicMin":min(nicList),
-                        "nicMax":max(nicList),}
 
-        response = make_response(render_template("index.html", lst=dataInRange,
-                                                 filterValues=filterValues,
+        response = make_response(render_template("index.html",
+                                                lst=dataInRange,
                                                 constantsValues=constantsValues))
         
         #check cookie, if needed it will attach to the response
         attachCookie(response)
 
         return response
+
+    #todo: prevent users from calling it directly, only for fetchAPI
+    @app.route('/filterfetcher/', methods=['GET'])
+    def filterFetcher():
+        import models
+        allProducts = models.getAllProducts()
+        nicList, sizeList, vgpgList, websiteList = models.getItemsFilterList(allProducts)
+        filterValues = {"brandList":models.getBrandList(allProducts),
+                        "nicMin":min(nicList),
+                        "nicMax":max(nicList),
+                        "sizeMin":min(sizeList),
+                        "sizeMax":max(sizeList),
+                        "vgpgList":vgpgList,
+                        "websiteList":websiteList,}
+        
+        return json.dumps({"filterValues": filterValues})
+        #if invalid redirect to homepage
 
     #todo: prevent users from calling it directly, only for fetchAPI
     @app.route('/moredata/<pageNumber>', methods=['GET'])

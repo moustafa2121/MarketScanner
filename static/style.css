@@ -305,24 +305,99 @@ table tr:hover {
     }
 }
 
+.modal-header{
+    padding:0 0 10px 0;
+    margin:16px 22px 10px 22px;
+}
 /* filter modal */
 #filterSortModal {
-    top:20vh;
+    top: 20vh;
 }
-
+.modal-content, .modal-content input, .modal-content select{
+    background-color: rgb(248,249,250);
+}
+#filterSortModal form {
+    display: grid;
+    gap: 5px 15px;
+    grid-template-columns: 47.5% 47.5%;
+}
 #filterSortModal form label{
     padding-bottom:0;
     margin-bottom:0;
+    margin-left:2px;
 }
-#filterSortModal form input {
-    width: 50%;
+#filterSortModal form .minMaxFiltersContainer {
+    display:flex;
+    flex-direction:row;
 }
-#filterSortModal form #nicMin, #filterSortModal form #nicMax{
+#filterSortModal form .minMaxFilters input {
+    display: inline-block;
+    height:38px;
+}
+#filterSortModal form .minMaxFilters input + input {
+    margin-left:10px;
+}
+#filterSortModal form #vgpgInput {
     display:inline-block;
-    width: 25%;
+    width: 45% !important;
 }
-#filterSortModal form #nicMax{
-    margin-left:3px;
+#filterSortModal form #brandInput{
+    display:inline-block;
+    width: 48% !important;
+}
+
+#filterSortModal form .modal-footer button {
+    --bs-btn-bg: #7c95ae;
+    --bs-btn-border-color: #7c95ae;
+    --bs-btn-hover-bg: #617f9c;
+    --bs-btn-hover-border-color: #617f9c;
+    --bs-btn-active-bg: #617f9c;
+}
+.modal-footer {
+    width: 100%;
+    padding-bottom: 0;
+    padding-right:0;
+}
+.modal-footer button{
+    margin:2px 0 0 10px;
+}
+
+/*filter pills */
+span.badge {
+    margin: 0 0 0 6px;
+    padding: 2px 2px 0px 4px;
+    cursor: default;
+    background-color: #7c95ae !important;
+}
+span.badge button{
+    padding:0;
+    width:8px;
+    margin:1px 2px 3px 3px;
+    vertical-align:middle;
+    color:gray
+}
+#brandFilterDiv span.badge {
+    max-width: 15.5%;
+}
+#brandFilterDiv span.badge span{
+    display:inline-block;
+    max-width:70%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    vertical-align:middle;
+}
+
+/* filter warning message */
+#filterMessage {
+    margin: 0 0 0 20px;
+    padding: 0 10px 0 10px;
+    max-height: 30px;
+    max-width: 350px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    cursor: default;
 }
 
 /* footer */
