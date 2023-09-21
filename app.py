@@ -47,21 +47,65 @@ def create_app():
         return response
 
     #todo: prevent users from calling it directly, only for fetchAPI
-    @app.route('/filterfetcher/', methods=['GET'])
-    def filterFetcher():
+    @app.route('/filterfetcher/<values>', methods=['GET'])
+    def filterFetcher(values):
         import models
-        allProducts = models.getAllProducts()
+        print("filter fetcher, pattern:", values)
+        if values != "all":
+            filters = cleanFilterPattern(values)
+            print(filters)
+            allProducts = models.filterProducts(filters)
+        else:
+            allProducts = models.getAllProducts()
         nicList, sizeList, vgpgList, websiteList = models.getItemsFilterList(allProducts)
+        nicMin, nicMax = getMinMaxOr0(nicList)
+        sizeMin, sizeMax = getMinMaxOr0(sizeList)
+
         filterValues = {"brandList":models.getBrandList(allProducts),
-                        "nicMin":min(nicList),
-                        "nicMax":max(nicList),
-                        "sizeMin":min(sizeList),
-                        "sizeMax":max(sizeList),
+                        "nicMin":nicMin,
+                        "nicMax":nicMax,
+                        "sizeMin":sizeMin,
+                        "sizeMax":sizeMax,
                         "vgpgList":vgpgList,
-                        "websiteList":websiteList,}
+                        "websiteList":websiteList}
         
         return json.dumps({"filterValues": filterValues})
         #if invalid redirect to homepage
+
+    def getMinMaxOr0(lst):
+        if len(lst) > 0:
+            return min(lst), max(lst)
+        else:
+            return 0, 0
+
+
+    def cleanFilterPattern(values):
+        import urllib.parse
+        values = values.replace(";", "/")
+        values = values.split("&")
+        filterDict = {}
+        for value in values:
+            value = urllib.parse.unquote(value)
+            field, value = value.split("=")
+            if field == "vgpgInput" or field == "brandInput":
+                filterDict[field] = value.split(",")
+            else:
+                filterDict[field] = value
+        return filterDict
+
+    #todo: prevent users from calling it directly, only for fetchAPI
+    @app.route('/filterapplier/<values>', methods=['GET'])
+    def filterApplier(values):
+        import models
+        print("filter")
+        filterDict = cleanFilterPattern(values)
+        print(filterDict)
+
+        dataRangeStart, dataRangeEnd = dataRangerFinder(1)
+        filteredData = models.filterProducts(filterDict, dataRangeStart, dataRangeEnd)
+        
+        return json.dumps({"filteredData": models.serializeProducts(filteredData)})
+
 
     #todo: prevent users from calling it directly, only for fetchAPI
     @app.route('/moredata/<pageNumber>', methods=['GET'])
@@ -70,11 +114,8 @@ def create_app():
         dataRangeStart, dataRangeEnd = dataRangerFinder(int(pageNumber))
         products = models.getProducts(dataRangeStart, dataRangeEnd)
         
-        #serialize
-        resultsList = []
-        for product in products:
-            resultsList.append(models.productSerializer(product))
-        return json.dumps({"returnValue": resultsList})
+        #serialize and return
+        return json.dumps({"returnValue": models.serializeProducts(products)})
         
         #if invalid redirect to homepage
 

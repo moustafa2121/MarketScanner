@@ -1,6 +1,7 @@
 from app import db
 from enum import Enum
 from sqlalchemy_serializer import SerializerMixin
+from sqlalchemy import or_
 
 wishlist_table = db.Table(
     'wishlist',
@@ -145,6 +146,9 @@ class ProductItem(db.Model):
     id_ = db.Column(db.Integer, primary_key=True)
     itemType = db.Column(db.Enum(ProductItemType), nullable=False)
     
+    def getValue(self):
+        return ''
+
     discriminator = db.Column('type', db.String(50))
     __mapper_args__ = {'polymorphic_on': discriminator}
 
@@ -160,6 +164,9 @@ class ProductItem_integer(ProductItem):
     __mapper_args__ = { 'polymorphic_identity': 'product_item_integer', }
     integerValue = db.Column(db.Integer)
 
+    def getValue(self):
+        return self.integerValue
+
     def __init__(self, integerValue, itemType, product):
         super().__init__(itemType, product)
         self.integerValue = integerValue
@@ -171,6 +178,9 @@ class ProductItem_string(ProductItem):
     __tablename__ = 'product_item_string'
     __mapper_args__ = { 'polymorphic_identity': 'product_item_string', }
     stringValue = db.Column(db.String(100))
+    
+    def getValue(self):
+        return self.stringValue
 
     def __init__(self, stringValue, itemType, product):
         super().__init__(itemType, product)
@@ -229,14 +239,7 @@ def getBrandList(products):
     [brandSet.add(product.brand.lower()) for product in products]
     return sorted(list(map(lambda x: x.title(), list(brandSet))))
 
-#todo: delete
-def getNicList(products):
-    nicSet = set()
-    for product in products:
-        [nicSet.add(item.integerValue) for item in product.items if item.itemType == ProductItemType.nic]
-    return sorted(list(nicSet))
-
-
+#todo: use filter?
 def getItemsFilterList(products):
     nicSet, sizeSet, vgpgSet, websiteSet = set(), set(), set(), set()
     for product in products:
@@ -249,3 +252,34 @@ def getItemsFilterList(products):
             elif item.itemType == ProductItemType.vgpg:
                 vgpgSet.add(item.stringValue)
     return sorted(list(nicSet)), sorted(list(sizeSet)), sorted(list(vgpgSet)), sorted(list(websiteSet))
+
+def filterProducts(filters, start=0, end=9999):
+    query = Product.query
+    if "nameInput" in filters.keys():
+        query = query.filter(Product.name.contains(filters["nameInput"]))
+    if "flavorInput" in filters.keys():
+        query = query.filter(Product.name.contains(filters["flavorInput"]))
+    if "nicMin" in filters.keys():
+        pass
+        #query = query.filter(Product.items.itemType == ProductItemType.nic)
+        #query = query.filter(Product.items.any(ProductItem.itemType == ProductItemType.nic))
+        #query = query.filter(Product.items.any(ProductItem.itemType == ProductItemType.nic))
+        #query = query.filter(Product.items.any(ProductItem.getValue() >= int(filters["nicMin"])))
+    if "nicMax" in filters.keys():
+        pass
+    if "sizeMin" in filters.keys():
+        pass
+    if "sizeMax" in filters.keys():
+        pass
+    if "websiteSelect" in filters.keys():
+        query = query.filter(Product.websiteName==filters["websiteSelect"])
+    if "brandInput" in filters.keys():
+        query = query.filter(or_(*[Product.brand == brand for brand in filters["brandInput"]]))
+    if "vgpgInput" in filters.keys():
+        pass
+    return query.limit(end-start).offset(start).all()
+
+    #return Product.query.limit(end-start).offset(start).all()
+
+def serializeProducts(productList):
+    return [productSerializer(product) for product in productList]

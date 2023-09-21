@@ -50,13 +50,3 @@ const enablePagination = (function () {
         }
     }
 })();
-
-const filterHandler = (function () {
-    const filterButton = document.querySelector('#filterSortHolder button');
-    const modal = document.querySelector("#filterSortModal");
-    filterButton.addEventListener("click", () => {
-        //modal.style.display = "inline-block";
-    });
-
-
-})();
