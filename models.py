@@ -1,7 +1,6 @@
 from app import db
-from enum import Enum
 from sqlalchemy_serializer import SerializerMixin
-from sqlalchemy import or_
+from sqlalchemy import func, and_
 
 wishlist_table = db.Table(
     'wishlist',
@@ -67,73 +66,84 @@ def addWebsite(name, baseUrl, icon, numberOfItems, timeStamp, commit=True):
     else:
         return existingWebsite
 
-ProductItemType = Enum("Type", ['flavor', 'nic', 'size', 'vgpg'])
+#define association tables for many-to-many relationships
+product_brand_association = db.Table('product_brand_association',
+    db.Column('product_id', db.String(400), db.ForeignKey('product.itemLink')),
+    db.Column('brand_id', db.String(255), db.ForeignKey('brand_item.value'))
+)
+product_flavor_association = db.Table('product_flavor_association', db.Model.metadata,
+    db.Column('product_id', db.String(400), db.ForeignKey('product.itemLink')),
+    db.Column('flavor_id', db.String(100), db.ForeignKey('flavor_item.value'))
+)
+product_nic_association = db.Table('product_nic_association', db.Model.metadata,
+    db.Column('product_id', db.String(400), db.ForeignKey('product.itemLink')),
+    db.Column('nic_id', db.Integer, db.ForeignKey('nic_item.value'))
+)
+product_size_association = db.Table('product_size_association', db.Model.metadata,
+    db.Column('product_id', db.String(400), db.ForeignKey('product.itemLink')),
+    db.Column('size_id', db.Integer, db.ForeignKey('size_item.value'))
+)
+product_vgpg_association = db.Table('product_vgpg_association', db.Model.metadata,
+    db.Column('product_id', db.String(400), db.ForeignKey('product.itemLink')),
+    db.Column('vgpg_id', db.String(5), db.ForeignKey('vgpg_item.value'))
+)
 
 class Product(db.Model, SerializerMixin):
     __tablename__ = "product"
     itemLink = db.Column(db.String(400), primary_key=True)
     name = db.Column(db.String(255))
     productImageLink = db.Column(db.String(400))
-    brand = db.Column(db.String(255))
+
+    #many-to-many relationships
+    brands = db.relationship('Brand', secondary=product_brand_association, back_populates='products')
+    flavors = db.relationship('Flavor', secondary=product_flavor_association, back_populates='products')
+    nics = db.relationship('Nic', secondary=product_nic_association, back_populates='products')
+    sizes = db.relationship('Size', secondary=product_size_association, back_populates='products')
+    vgpgs = db.relationship('Vgpg', secondary=product_vgpg_association, back_populates='products')
 
     websiteName = db.Column(db.String(100), db.ForeignKey('itemWebsite.name'))
-    
     website = db.relationship('ItemWebsite', back_populates='products')
-    items = db.relationship('ProductItem', back_populates='product')
     users = db.relationship('UserModel', secondary=wishlist_table, back_populates='wishlist')
 
-    def getItemsByType(self, itemType):
-        return [item.__str__() for item in self.items if item.itemType == itemType]
-
-    def getFlavors(self):
-        return self.getItemsByType(ProductItemType.flavor)
-    def getNics(self):
-        return self.getItemsByType(ProductItemType.nic)
-    def getSizes(self):
-        return self.getItemsByType(ProductItemType.size)
-    def getVgpgs(self):
-        return self.getItemsByType(ProductItemType.vgpg)
     def getWebIcon(self):
         if self.website:
             return self.website.icon
         return None
+
     def getWebUrl(self):
         if self.website:
             return self.website.baseUrl
         return None
 
-    def __init__(self, itemLink, name, productImageLink, brand, website):
+    def __init__(self, itemLink, name, productImageLink, website):
         self.itemLink = itemLink
         self.name = name
         self.productImageLink = productImageLink
-        self.brand = brand
         self.website = website
 
     def __str__(self):
-        item_lines = []
-
-        itemsLst = [item.integerValue for item in self.items if isinstance(item, ProductItem_integer)]
-        itemsLst += [item.stringValue for item in self.items if isinstance(item, ProductItem_string)]
-
-        if itemsLst:
-            item_lines.append("Items:")
-            item_lines.extend(itemsLst)
+        brands_str = ", ".join([brand.value for brand in self.brands])
+        flavors_str = ", ".join([flavor.value for flavor in self.flavors])
+        nics_str = ", ".join([str(nic.value) for nic in self.nics])
+        sizes_str = ", ".join([str(size.value) for size in self.sizes])
+        vgpgs_str = ", ".join([vgpg.value for vgpg in self.vgpgs])
 
         return f"Product Information:\n" \
                f"Item Link: {self.itemLink}\n" \
                f"Name: {self.name}\n" \
                f"Product Image Link: {self.productImageLink}\n" \
-               f"Brand: {self.brand}\n" \
                f"Website Name: {self.websiteName}\n" \
-               f"Items:\n" \
-               f"{item_lines}"
+               f"Brands: {brands_str}\n" \
+               f"Flavors: {flavors_str}\n" \
+               f"Nics: {nics_str}\n" \
+               f"Sizes: {sizes_str}\n" \
+               f"Vgpgs: {vgpgs_str}\n"
+    
 
-
-def addProduct(itemLink, name, productImageLink, brand, website, commit=True):
+def addProduct(itemLink, name, productImageLink, website, commit=True):
     existingProduct = Product.query.filter_by(itemLink=itemLink).first()
-
     if existingProduct is None:
-        product = Product(itemLink, name, productImageLink, brand, website)
+        product = Product(itemLink, name, productImageLink, website)
         db.session.add(product)
         if commit:
             db.session.commit()
@@ -141,145 +151,136 @@ def addProduct(itemLink, name, productImageLink, brand, website, commit=True):
     else:
         return existingProduct
 
-class ProductItem(db.Model):
-    __tablename__ = 'product_item'
-    id_ = db.Column(db.Integer, primary_key=True)
-    itemType = db.Column(db.Enum(ProductItemType), nullable=False)
-    
-    def getValue(self):
-        return ''
+class Brand(db.Model, SerializerMixin):
+    __tablename__ = 'brand_item'
+    value = db.Column(db.String(255), primary_key=True)
+    products = db.relationship("Product", secondary=product_brand_association, back_populates='brands')
+    def __init__(self, value):
+        self.value = value
 
-    discriminator = db.Column('type', db.String(50))
-    __mapper_args__ = {'polymorphic_on': discriminator}
+class Flavor(db.Model, SerializerMixin):
+    __tablename__ = 'flavor_item'
+    value = db.Column(db.String(100), primary_key=True)
+    products = db.relationship("Product", secondary=product_flavor_association, back_populates='flavors')
+    def __init__(self, value):
+        self.value = value
 
-    product_id = db.Column(db.String(400), db.ForeignKey('product.itemLink'))
-    product = db.relationship("Product", back_populates='items')
-        
-    def __init__(self, itemType, product):
-        self.itemType = itemType
-        self.product = product
+class Nic(db.Model, SerializerMixin):
+    __tablename__ = 'nic_item'
+    value = db.Column(db.Integer, primary_key=True)
+    products = db.relationship("Product", secondary=product_nic_association, back_populates='nics')
+    def __init__(self, value):
+        self.value = value
 
-class ProductItem_integer(ProductItem):
-    __tablename__ = 'product_item_integer'
-    __mapper_args__ = { 'polymorphic_identity': 'product_item_integer', }
-    integerValue = db.Column(db.Integer)
+class Size(db.Model, SerializerMixin):
+    __tablename__ = 'size_item'
+    value = db.Column(db.Integer, primary_key=True)
+    products = db.relationship("Product", secondary=product_size_association, back_populates='sizes')
+    def __init__(self, value):
+        self.value = value
 
-    def getValue(self):
-        return self.integerValue
+class Vgpg(db.Model, SerializerMixin):
+    __tablename__ = 'vgpg_item'
+    value = db.Column(db.String(5), primary_key=True)
+    products = db.relationship("Product", secondary=product_vgpg_association, back_populates='vgpgs')
+    def __init__(self, value):
+        self.value = value
 
-    def __init__(self, integerValue, itemType, product):
-        super().__init__(itemType, product)
-        self.integerValue = integerValue
 
-    def __str__(self):
-        return str(self.integerValue)
+def addItemToProduct(itemValue, product, itemClass, relationshipAttr, commit=True):
+    existingItem = itemClass.query.filter_by(value=itemValue).first()
 
-class ProductItem_string(ProductItem):
-    __tablename__ = 'product_item_string'
-    __mapper_args__ = { 'polymorphic_identity': 'product_item_string', }
-    stringValue = db.Column(db.String(100))
-    
-    def getValue(self):
-        return self.stringValue
-
-    def __init__(self, stringValue, itemType, product):
-        super().__init__(itemType, product)
-        self.stringValue = stringValue
-
-    def __str__(self):
-        return self.stringValue
-  
-
-def addProductItem_integer(integerValue, itemType, product, commit=True):
-    existingItem = ProductItem_integer.query.filter_by(integerValue=integerValue, 
-                                                     product=product).first()
     if existingItem is None:
-        productItem = ProductItem_integer(integerValue, itemType, product)
-        db.session.add(productItem)
-        if commit:
-            db.session.commit()
-        return productItem
+        newItem = itemClass(value=itemValue)
+        db.session.add(newItem)
     else:
-        return existingItem
+        newItem = existingItem
 
-def addProductItem_string(stringValue, itemType, product, commit=True):
-    existingItem = ProductItem_string.query.filter_by(stringValue=stringValue, 
-                                                     product=product).first()
-    if existingItem is None:
-        productItem = ProductItem_string(stringValue, itemType, product)
-        db.session.add(productItem)
-        if commit:
-            db.session.commit()
-        return productItem
-    else:
-        return existingItem
+    # Associate the item with the product
+    if newItem not in getattr(product, relationshipAttr):
+        getattr(product, relationshipAttr).append(newItem)
+    #getattr(newItem, "products").append(product)
+
+    if commit:
+        db.session.commit()
+
+
+def serializeProducts(productList):
+    return [productSerializer(product) for product in productList]
 
 def productSerializer(item):
-    result = item.to_dict(rules=('-website', '-users', '-items'))
-    #since SerializerMixin mixin doesn't work with inherited models,
-    #we will translate them to a dict manually
-    result['flavor'] = item.getFlavors()
-    result['nic'] = item.getNics()
-    result['size'] = item.getSizes()
-    result['vgpg'] = item.getVgpgs()
+    result = item.to_dict(rules=('-website', '-users', '-sizes', '-nics', 
+                                 '-vgpgs', '-flavors', '-brands'))
+    result['brand'] = listIt(item.brands)
+    result['flavor'] = listIt(item.flavors)
+    result['nic'] = listIt(item.nics)
+    result['size'] = listIt(item.sizes)
+    result['vgpg'] = listIt(item.vgpgs)
     result['icon'] = item.getWebIcon()
     result['baseUrl'] = item.getWebUrl()
+
     return result
+
+#used to obtain the values of the 5 items when passed by Product
+listIt = lambda item: [i.value for i in item]
+
+#used for Brand, it takes a list of Brand, counts them and returns
+#a set in which each item is followed by the # of its occurance
+def listToSetCounter(stringLst):
+    stringSet = {}
+    for string in stringLst:
+        if string == "": continue
+        if string in stringSet:
+            stringSet[string] += 1
+        else:
+            stringSet[string] = 1
+    return {f"{string} ({count})" for string, count in stringSet.items()}
 
 #fetchers
 def getProducts(start, end):
     return Product.query.limit(end-start).offset(start).all()
-
 def getAllProducts():
     return Product.query.all()
 
-#sorted and case insensitive
-def getBrandList(products):
-    brandSet = set()
-    [brandSet.add(product.brand.lower()) for product in products]
-    return sorted(list(map(lambda x: x.title(), list(brandSet))))
-
-#todo: use filter?
+#given a query of Product objects, returns filter data that are found in these objects
+#and can be applied to filter these objects
 def getItemsFilterList(products):
-    nicSet, sizeSet, vgpgSet, websiteSet = set(), set(), set(), set()
+    brandList, nicSet, sizeSet, vgpgSet, websiteSet = [], set(), set(), set(), set()
     for product in products:
         websiteSet.add(product.website.name)
-        for item in product.items:
-            if item.itemType == ProductItemType.nic:
-                nicSet.add(item.integerValue)
-            elif item.itemType == ProductItemType.size:
-                sizeSet.add(item.integerValue)
-            elif item.itemType == ProductItemType.vgpg:
-                vgpgSet.add(item.stringValue)
-    return sorted(list(nicSet)), sorted(list(sizeSet)), sorted(list(vgpgSet)), sorted(list(websiteSet))
+        nicSet.update(listIt(product.nics))
+        sizeSet.update(listIt(product.sizes))
+        vgpgSet.update(listIt(product.vgpgs))
+        brandList += listIt(product.brands)
+    brandSet = listToSetCounter(brandList)
+
+    return sorted(list(brandSet)), sorted(list(nicSet)), sorted(list(sizeSet)), sorted(list(vgpgSet)), sorted(list(websiteSet))
 
 def filterProducts(filters, start=0, end=9999):
     query = Product.query
     if "nameInput" in filters.keys():
         query = query.filter(Product.name.contains(filters["nameInput"]))
     if "flavorInput" in filters.keys():
-        query = query.filter(Product.name.contains(filters["flavorInput"]))
-    if "nicMin" in filters.keys():
-        pass
-        #query = query.filter(Product.items.itemType == ProductItemType.nic)
-        #query = query.filter(Product.items.any(ProductItem.itemType == ProductItemType.nic))
-        #query = query.filter(Product.items.any(ProductItem.itemType == ProductItemType.nic))
-        #query = query.filter(Product.items.any(ProductItem.getValue() >= int(filters["nicMin"])))
-    if "nicMax" in filters.keys():
-        pass
-    if "sizeMin" in filters.keys():
-        pass
-    if "sizeMax" in filters.keys():
-        pass
+        query = Product.query.join(Product.flavors).filter(func.lower(Flavor.value).contains(func.lower(filters["flavorInput"])))
     if "websiteSelect" in filters.keys():
         query = query.filter(Product.websiteName==filters["websiteSelect"])
     if "brandInput" in filters.keys():
-        query = query.filter(or_(*[Product.brand == brand for brand in filters["brandInput"]]))
+        query = Product.query.join(Brand.sizes).filter(Brand.value == filters["brandInput"])
     if "vgpgInput" in filters.keys():
-        pass
+        query = Product.query.join(Vgpg.sizes).filter(Vgpg.value == filters["vgpgInput"])
+
+    if "sizeMin" in filters.keys() and "sizeMax" in filters.keys():
+        query = Product.query.join(Product.sizes).filter(and_(Size.value >= int(filters["sizeMin"]), Size.value <= int(filters["sizeMax"])))
+    elif "sizeMin" in filters.keys():
+        query = Product.query.join(Product.sizes).filter(Size.value >= int(filters["sizeMin"]))
+    elif "sizeMax" in filters.keys():
+        query = Product.query.join(Product.sizes).filter(Size.value <= int(filters["sizeMax"]))
+
+    if "nicMin" in filters.keys() and "nicMax" in filters.keys():
+        query = Product.query.join(Product.nics).filter(and_(Nic.value >= int(filters["nicMin"]),Nic.value <= int(filters["nicMax"])))
+    elif "nicMin" in filters.keys():
+        query = Product.query.join(Product.nics).filter(Nic.value >= int(filters["nicMin"]))
+    elif "nicMax" in filters.keys():
+        query = Product.query.join(Product.nics).filter(Nic.value <= int(filters["nicMax"]))
+
     return query.limit(end-start).offset(start).all()
-
-    #return Product.query.limit(end-start).offset(start).all()
-
-def serializeProducts(productList):
-    return [productSerializer(product) for product in productList]

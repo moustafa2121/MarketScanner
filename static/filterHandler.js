@@ -15,10 +15,8 @@ const updateFilterModal_display = (() => {
     //display
     return (filterData) => {
         const brandLst = filterData['brandList']
-        const nicMin = filterData['nicMin']
-        const nicMax = filterData['nicMax']
-        const sizeMin = filterData['sizeMin']
-        const sizeMax = filterData['sizeMax']
+        const nicList = filterData['nicList']
+        const sizeList = filterData['sizeList']
         const vgpgList = filterData['vgpgList']
         const websiteList = filterData['websiteList']
 
@@ -34,14 +32,12 @@ const updateFilterModal_display = (() => {
 
         //display new elements
         //nic min and max
-        let disabledInput = nicMin == nicMax ? true : false;
-        nicFilterContainer.appendChild(setRangeInputElements("nicMin", nicMin, nicMax, "Min", disabledInput));
-        nicFilterContainer.appendChild(setRangeInputElements("nicMax", nicMin, nicMax, "Max", disabledInput));
+        nicFilterContainer.appendChild(setRangeInputElements("nicMin", nicList, "Min"));
+        nicFilterContainer.appendChild(setRangeInputElements("nicMax", nicList, "Max"));
 
         //size min and max
-        disabledInput = sizeMin == sizeMax ? true : false;
-        sizeFilterContainer.appendChild(setRangeInputElements("sizeMin", sizeMin, sizeMax, "Min", disabledInput));
-        sizeFilterContainer.appendChild(setRangeInputElements("sizeMax", sizeMin, sizeMax, "Max", disabledInput));
+        sizeFilterContainer.appendChild(setRangeInputElements("sizeMin", sizeList, "Min"));
+        sizeFilterContainer.appendChild(setRangeInputElements("sizeMax", sizeList, "Max"));
 
         //set the website filters
         setOptionElements(websiteList, webFilterSelect);
@@ -112,10 +108,10 @@ const filterFormHandler = (function () {
     const vgpgSelect = document.querySelector("#vgpgFilterDiv select");
     const brandSelect = document.querySelector("#brandFilterDiv select");
     vgpgSelect.addEventListener("change", function (event) {
-        handleFilterChange.call(this, event, 2);
+        handleSelectFilterChange.call(this, event, 2);
     });
     brandSelect.addEventListener("change", function (event) {
-        handleFilterChange.call(this, event, 3);
+        handleSelectFilterChange.call(this, event, 3);
     });
 
     //a listener for the form's submit button
@@ -170,7 +166,6 @@ const filterFormHandler = (function () {
 
                 filterFormCloseButton.click();
             }
-            
         }
     });
 
@@ -297,7 +292,7 @@ function appendFilterBadge(text, prevSibling) {
 //the event function for both brand and vgpg selection filters
 //it adds badges next to the <select> element, container the user's selection
 //number of badges is limited by maxBadgesValue
-function handleFilterChange(event, maxBadgesValue) {
+function handleSelectFilterChange(event, maxBadgesValue) {
     const newValue = event.target.value;
     //any is the default value, ignore it if it is selected
     if (newValue !== "Any") {
@@ -346,14 +341,29 @@ function setOptionElements(dataList, parentSelect) {
     }
 }
  
-function setRangeInputElements(id_, min, max, placeholder, disabled) {
+function setRangeInputElements(id_, list, placeholder) {
+    min = Math.min(list)
+
     const input = document.createElement("input");
     input.classList.add("form-control");
     input.setAttribute("type", "number");
     input.id = id_;
-    input.setAttribute("min", min);
-    input.setAttribute("max", max);
     input.setAttribute("placeholder", placeholder);
-    input.disabled = disabled;
+    if (list.length < 2)
+        input.disabled = true;
+    else {
+        let min, max;
+        if (placeholder === "Min") {
+            min = Math.min(...list)
+            max = Math.max(...list.slice(0, list.length - 1))
+        }
+        else {
+            min = list[1]
+            max = Math.max(...list)
+        }
+        input.setAttribute("min", min);
+        input.setAttribute("max", max);
+    }
+
     return input;
 }

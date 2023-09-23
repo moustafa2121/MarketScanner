@@ -39,7 +39,7 @@ const adjacentTablesHandler = (function () {
                     tableProductsArr.push(await getTableData(page));
         },
         //a reference to to the tableProductsArr
-        tableProductsArr: () => { return tableProductsArr; },
+        tableProductsArr: () => tableProductsArr,
     };
 })();
 
@@ -57,17 +57,17 @@ class TableProducts {
 //holds the product
 class Product {
     constructor(item) {
-        this.itemLink = item.itemLink;
         this.name = item.name;
-        this.productImageLink = item.productImageLink;
-        this.brand = item.brand.length === 0 ? 'No Data' : item.brand;
         this.websiteName = item.websiteName;
+        this.productImageLink = item.productImageLink;
+        this.itemLink = item.itemLink;
+        this.baseUrl = item.baseUrl;
+        this.icon = item.icon;
+        this.brand = (item.brand.length === 0 || item.brand[0].length === 0) ? 'No Data' : item.brand;
         this.flavor = item.flavor.length === 0 ? 'No Data' : item.flavor;
         this.nic = item.nic.length === 0 ? 'No Data' : item.nic;
         this.size = item.size.length === 0 ? 'No Data' : item.size;
         this.vgpg = item.vgpg.length === 0 ? 'No Data' : item.vgpg;
-        this.icon = item.icon;
-        this.baseUrl = item.baseUrl;
     }
 }
 
