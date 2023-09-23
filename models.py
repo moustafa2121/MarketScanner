@@ -109,7 +109,6 @@ class Product(db.Model, SerializerMixin):
         if self.website:
             return self.website.icon
         return None
-
     def getWebUrl(self):
         if self.website:
             return self.website.baseUrl
@@ -221,9 +220,6 @@ def productSerializer(item):
 
     return result
 
-#used to obtain the values of the 5 items when passed by Product
-listIt = lambda item: [i.value for i in item]
-
 #used for Brand, it takes a list of Brand, counts them and returns
 #a set in which each item is followed by the # of its occurance
 def listToSetCounter(stringLst):
@@ -284,3 +280,8 @@ def filterProducts(filters, start=0, end=9999):
         query = Product.query.join(Product.nics).filter(Nic.value <= int(filters["nicMax"]))
 
     return query.limit(end-start).offset(start).all()
+
+
+
+#used to obtain the values of the 5 items when passed by Product
+listIt = lambda item: sorted([i.value for i in item])

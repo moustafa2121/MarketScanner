@@ -75,7 +75,7 @@
                     <!-- nicotine level -->
                     {% if item.nics|length > 0 %}
                     <td class="nicColumn centerText">
-                        {% for nicLvl in item.nics %}
+                        {% for nicLvl in item.nics|sort(attribute="value") %}
                         {{ nicLvl.value }}{% if not loop.last %},{% endif %}
                         {% endfor %}
                     </td>
@@ -86,7 +86,7 @@
                     <!-- bottle size -->
                     {% if item.sizes|length > 0 %}
                     <td class="sizeColumn centerText">
-                        {% for size in item.sizes %}
+                        {% for size in item.sizes|sort(attribute="value") %}
                         {{ size.value }}{% if not loop.last %},{% endif %}
                         {% endfor %}
                     </td>
