@@ -1,6 +1,6 @@
 from app import db
 from sqlalchemy_serializer import SerializerMixin
-from sqlalchemy import func, and_
+from sqlalchemy import func, and_, or_
 
 wishlist_table = db.Table(
     'wishlist',
@@ -265,9 +265,9 @@ def filterProducts(filters, start=0, end=9999):
     if "websiteSelect" in filters.keys():
         query = query.filter(Product.websiteName==filters["websiteSelect"])
     if "brandInput" in filters.keys():
-        query = Product.query.join(Brand.sizes).filter(Brand.value == filters["brandInput"])
+        query = Product.query.filter(or_(*[Product.brands.any(value=brand) for brand in filters["brandInput"]]))
     if "vgpgInput" in filters.keys():
-        query = Product.query.join(Vgpg.sizes).filter(Vgpg.value == filters["vgpgInput"])
+        query = Product.query.filter(or_(*[Product.vgpgs.any(value=vgpg) for vgpg in filters["vgpgInput"]]))
 
     if "sizeMin" in filters.keys() and "sizeMax" in filters.keys():
         query = Product.query.join(Product.sizes).filter(and_(Size.value >= int(filters["sizeMin"]), Size.value <= int(filters["sizeMax"])))

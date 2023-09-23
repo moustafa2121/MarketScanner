@@ -79,7 +79,7 @@ async function loadTheTable(pageNumber, paginationArray, displayTable=true) {
     //disable page navigation during fetching and displaying
     enablePagination(false);
 
-    //for most cakes the displayTable is true
+    //for most cases the displayTable is true
     if (displayTable) {
         //try to get tableProduct from the frontend stroage
         let tableProducts = adjacentTablesHandler.getTableProduct(pageNumber)

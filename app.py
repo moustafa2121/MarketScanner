@@ -94,7 +94,7 @@ def create_app():
     #called on in the background from the front end
     #it fetches pages to be loaded dynmically in the frontend
     #returns a json with the data equalling [itemsPerPage] items
-    @app.route('/moredata/<pageNumber>', methods=['GET'])
+    @app.route('/moredata/<pageNumber>/', methods=['GET'])
     def getMoreItems(pageNumber):
         import models
         dataRangeStart, dataRangeEnd = dataRangerFinder(int(pageNumber))
@@ -184,8 +184,11 @@ def cleanFilterPattern(values):
     for value in values:
         value = urllib.parse.unquote(value)
         field, value = value.split("=")
-        if field == "vgpgInput" or field == "brandInput":
+        if field == "vgpgInput":
             filterDict[field] = value.split(",")
+        elif field == "brandInput":
+            filterDict[field] = value.split(",")
+            filterDict["brandInput"] = list(map(lambda x:x.rsplit(" (", 1)[0], filterDict["brandInput"]))
         else:
             filterDict[field] = value
     return filterDict

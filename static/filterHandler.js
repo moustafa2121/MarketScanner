@@ -56,39 +56,85 @@ const updateFilterModal_display = (() => {
 //todo: if no filter available (or only one item), disable the filter button all together
 const filterValuesHolder = (function () {
     const filterButton = document.querySelector("#filterSortHolder button");
-
-    async function updateFilterModal() {
-        filterButton.disabled = true;
-        filterButton.parentNode.title = "Fetching filter data, hold!";
-
-        //todo: if changes or no data in local, fetch from db
-        //get pattern
-        let filterPattern = localStorage.getItem("filterPattern");
-        if (!filterPattern)
-            filterPattern = "all";//default
-        else
-            filterPattern = JSON.parse(filterPattern);
-
-        //get filterdData
-        let filterData = localStorage.getItem("filterData");
-        console.log(filterData);
-        if (!filterData) {
-            filterData = await getFilterData(filterPattern);
-            localStorage.setItem("filterData", JSON.stringify(filterData));
+    enableFilterButton = (enable) => {
+        if (enable) {
+            filterButton.disabled = false;
+            filterButton.parentNode.title = '';
         }
-        else
-            filterData = JSON.parse(filterData);
+        else {
+            filterButton.disabled = true;
+            filterButton.parentNode.title = "Fetching filter data, hold!";
+        }
+    }
+    let currentFilterPattern = "";
+    let currentFilterData = {};
+
+    //initial call of the filter modal update after page refresh
+    //filter pattern is the json produced after cleaning the filter form
+    let filterPattern = localStorage.getItem("filterPattern");
+    if (!filterPattern) 
+        filterPattern = "all";
+    else if (filterPattern !== "all") 
+        filterPattern = JSON.parse(filterPattern);
+    //update the modal and its display
+    updateFilterModal(filterPattern);
+
+    async function updateFilterModal(filterPattern) {
+        enableFilterButton(false);
+
+        let filterData = {}
+        console.log("pattern: ", filterPattern);
+
+        if (filterPattern === "all") {
+            filterData = localStorage.getItem("allFilterDict");
+            if (!filterData) {//if all is not saved in the DB
+                filterData = await getFilterData(filterPattern);
+                //save to the storage
+                localStorage.setItem("filterPattern", filterPattern);
+                localStorage.setItem("filterData", JSON.stringify(filterData));
+                //save for later use when Reset the form modal
+                localStorage.setItem("allFilterDict", JSON.stringify(filterData));
+            }
+            else
+                filterData = JSON.parse(filterData)
+            currentFilterPattern = filterPattern;
+            currentFilterData = filterData;
+        }
+        else if (filterPattern !== currentFilterPattern) {
+            //if the passed filter pattern is not the same as the one in storage
+            //than save it in the storage and set it to the current pattern
+            //update the display of the modal
+
+            //get stuff from DB
+            console.log("fetching filter")
+            filterData = await getFilterData(filterDataToGetFormat(filterPattern));
+            console.log("filter returned");
+            console.log(filterData);
+
+            //save the filter data
+            localStorage.setItem("filterPattern", JSON.stringify(filterPattern));
+            localStorage.setItem("filterData", JSON.stringify(filterData));
+            currentFilterPattern = filterPattern;
+            currentFilterData = filterData;
+        }
 
         //update the display
-        updateFilterModal_display(filterData)
+        updateFilterModal_display(currentFilterData)
 
         //clean up
-        filterButton.disabled = false;
-        filterButton.parentNode.title = '';
+        enableFilterButton(true);
     }
-    updateFilterModal();
 
-    return updateFilterModal;
+    //return
+    return {
+        updateFilterModal: updateFilterModal,
+        resetFilterModal: () => {
+            currentFilterPattern = "all";
+            currentFilterData = localStorage.getItem("allFilterDict");
+            localStorage.setItem("filterPattern", currentFilterPattern);
+            localStorage.setItem("filterData", currentFilterData);
+        }
+    };
 })();
 
 //a closure that handles event listeners of the filters
@@ -118,9 +164,9 @@ const filterFormHandler = (function () {
     //validates data, if valid return them to db
     filterForm.addEventListener("submit", async function(event) {
         event.preventDefault();
-        console.log("submit");
+        console.log("submit form");
 
-        //get all the filter data
+        //get all the filter data from the form
         const filterJson = {
             nameInput: filterForm.querySelector('#nameInput').value.trim() != "" ? filterForm.querySelector('#nameInput').value.trim() : "none",
             flavorInput: filterForm.querySelector('#flavorInput').value.trim() != "" ? filterForm.querySelector('#flavorInput').value.trim() : "none",
@@ -152,19 +198,8 @@ const filterFormHandler = (function () {
             }
             //if the filter object is not empty, send it to the backend
             if (Object.keys(filterJson).length > 0) {
-                const filterPattern = filterDataToGetFormat(filterJson);
-                const returnedData = await sendFilterData(filterPattern);
-
-                //if success, save pattern in the DB
-                filterData = await getFilterData(filterPattern);
-                console.log("filter returned");
-                console.log(filterData);
-                //save the filer data
-                localStorage.setItem("filterPattern", JSON.stringify(filterPattern))
-                localStorage.setItem("filterData", JSON.stringify(filterData))
-                filterValuesHolder();
-
                 filterFormCloseButton.click();
+                filterValuesHolder.updateFilterModal(filterJson);
             }
         }
     });
@@ -173,8 +208,7 @@ const filterFormHandler = (function () {
     //and later reloads the page, thus fetching filterData/pattern for all products
     filterFormResetButton.addEventListener("click", () => {
         console.log("click");
-        localStorage.removeItem("filterPattern");
-        localStorage.removeItem("filterData");
+        filterValuesHolder.resetFilterModal();
         location.reload();
     });
 })();
@@ -352,18 +386,8 @@ function setRangeInputElements(id_, list, placeholder) {
     if (list.length < 2)
         input.disabled = true;
     else {
-        let min, max;
-        if (placeholder === "Min") {
-            min = Math.min(...list)
-            max = Math.max(...list.slice(0, list.length - 1))
-        }
-        else {
-            min = list[1]
-            max = Math.max(...list)
-        }
-        input.setAttribute("min", min);
-        input.setAttribute("max", max);
+        input.setAttribute("min", Math.min(...list));
+        input.setAttribute("max", Math.max(...list));
     }
-
     return input;
 }
