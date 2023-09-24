@@ -66,7 +66,7 @@ const filterValuesHolder = (function () {
             filterButton.parentNode.title = "Fetching filter data, hold!";
         }
     }
-    let currentFilterPattern = "";
+    let currentFilterPattern = "all";
     let currentFilterData = {};
 
     //initial call of the filter modal update after page refresh
@@ -77,18 +77,21 @@ const filterValuesHolder = (function () {
     else if (filterPattern !== "all") 
         filterPattern = JSON.parse(filterPattern);
     //update the modal and its display
-    updateFilterModal(filterPattern);
-
-    async function updateFilterModal(filterPattern) {
+    updateFilterModal(filterPattern, false);
+       
+    async function updateFilterModal(filterPattern, refreshTheTable = true) {
         enableFilterButton(false);
 
         let filterData = {}
-        console.log("pattern: ", filterPattern);
-
+        let newTotalPages = -1;
+        console.log("passed pattern: ", filterPattern);
+        
         if (filterPattern === "all") {
             filterData = localStorage.getItem("allFilterDict");
             if (!filterData) {//if all is not saved in the DB
-                filterData = await getFilterData(filterPattern);
+                const returnedData = await getFilterData(filterPattern);
+                filterData = returnedData["filterValues"];
+                newTotalPages = parseInt(JSON.parse(returnedData["totalPages"]));
                 //save to the storage
                 localStorage.setItem("filterPattern", filterPattern);
                 localStorage.setItem("filterData", JSON.stringify(filterData));
@@ -106,8 +109,11 @@ const filterValuesHolder = (function () {
             //update the display of the modal
 
             //get stuff from DB
-            console.log("fetching filter")
-            filterData = await getFilterData(filterDataToGetFormat(filterPattern));
+            console.log("fetching filter: ", filterPattern);
+            const returnedData = await getFilterData(filterDataToGetFormat(filterPattern));
+            filterData = returnedData["filterValues"];
+            newTotalPages = parseInt(JSON.parse(returnedData["totalPages"]));
+            newTotalItems = parseInt(JSON.parse(returnedData["totalItems"]));
             console.log("filter returned");
             console.log(filterData);
 
@@ -119,7 +125,9 @@ const filterValuesHolder = (function () {
         }
 
         //update the display
-        updateFilterModal_display(currentFilterData)
+        updateFilterModal_display(currentFilterData);
+        if (refreshTheTable)
+            onFilterChange(newTotalPages, newTotalItems);
 
         //clean up
         enableFilterButton(true);
@@ -128,6 +136,7 @@ const filterValuesHolder = (function () {
     //return
     return {
         updateFilterModal: updateFilterModal,
+        currentFilterPattern: () => currentFilterPattern,
         resetFilterModal: () => {
             currentFilterPattern = "all";
             currentFilterData = localStorage.getItem("allFilterDict");
@@ -136,6 +145,12 @@ const filterValuesHolder = (function () {
         }
     };
 })();
+
+//reset the filter on page refresh
+window.addEventListener("unload", () => {
+    //todo: confirm window
+    filterValuesHolder.resetFilterModal();
+});
 
 //a closure that handles event listeners of the filters
 //ensures the filter values are valid
@@ -226,22 +241,6 @@ function getFilterData(filterApplied) {
         })
         .then(response => response.json())
         .then(data => {
-            return data['filterValues'];
-        })
-        .catch(error => {
-            console.log("error fetching:", error);
-        });
-}
-
-function sendFilterData(filterJson) {
-    return fetch(`/filterapplier/${filterJson}`, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    })
-        .then(response => response.json())
-        .then(data => {
             return data;
         })
         .catch(error => {
@@ -249,11 +248,11 @@ function sendFilterData(filterJson) {
         });
 }
 
-function filterDataToGetFormat(obj) {
+function filterDataToGetFormat(filterPattern) {
     const paramLst = [];
-    for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
-            const value = obj[key];
+    for (const key in filterPattern) {
+        if (filterPattern.hasOwnProperty(key)) {
+            const value = filterPattern[key];
             if (Array.isArray(value))
                 paramLst.push(`${key}=${value.join(',')}`);
             else

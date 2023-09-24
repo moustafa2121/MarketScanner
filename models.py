@@ -252,32 +252,34 @@ def getItemsFilterList(products):
 
     return sorted(list(brandSet)), sorted(list(nicSet)), sorted(list(sizeSet)), sorted(list(vgpgSet)), sorted(list(websiteSet))
 
+#given a properly formatted filter (post being submitted with GET)
+#this function will return the filtered products.
 def filterProducts(filters, start=0, end=9999):
     query = Product.query
     if "nameInput" in filters.keys():
         query = query.filter(Product.name.contains(filters["nameInput"]))
     if "flavorInput" in filters.keys():
-        query = Product.query.join(Product.flavors).filter(func.lower(Flavor.value).contains(func.lower(filters["flavorInput"])))
+        query = query.join(Product.flavors).filter(func.lower(Flavor.value).contains(func.lower(filters["flavorInput"])))
     if "websiteSelect" in filters.keys():
         query = query.filter(Product.websiteName==filters["websiteSelect"])
     if "brandInput" in filters.keys():
-        query = Product.query.filter(or_(*[Product.brands.any(value=brand) for brand in filters["brandInput"]]))
+        query = query.filter(or_(*[Product.brands.any(value=brand) for brand in filters["brandInput"]]))
     if "vgpgInput" in filters.keys():
-        query = Product.query.filter(or_(*[Product.vgpgs.any(value=vgpg) for vgpg in filters["vgpgInput"]]))
+        query = query.filter(or_(*[Product.vgpgs.any(value=vgpg) for vgpg in filters["vgpgInput"]]))
 
     if "sizeMin" in filters.keys() and "sizeMax" in filters.keys():
-        query = Product.query.join(Product.sizes).filter(and_(Size.value >= int(filters["sizeMin"]), Size.value <= int(filters["sizeMax"])))
+        query = query.join(Product.sizes).filter(and_(Size.value >= int(filters["sizeMin"]), Size.value <= int(filters["sizeMax"])))
     elif "sizeMin" in filters.keys():
-        query = Product.query.join(Product.sizes).filter(Size.value >= int(filters["sizeMin"]))
+        query = query.join(Product.sizes).filter(Size.value >= int(filters["sizeMin"]))
     elif "sizeMax" in filters.keys():
-        query = Product.query.join(Product.sizes).filter(Size.value <= int(filters["sizeMax"]))
+        query = query.join(Product.sizes).filter(Size.value <= int(filters["sizeMax"]))
 
     if "nicMin" in filters.keys() and "nicMax" in filters.keys():
-        query = Product.query.join(Product.nics).filter(and_(Nic.value >= int(filters["nicMin"]),Nic.value <= int(filters["nicMax"])))
+        query = query.join(Product.nics).filter(and_(Nic.value >= int(filters["nicMin"]),Nic.value <= int(filters["nicMax"])))
     elif "nicMin" in filters.keys():
-        query = Product.query.join(Product.nics).filter(Nic.value >= int(filters["nicMin"]))
+        query = query.join(Product.nics).filter(Nic.value >= int(filters["nicMin"]))
     elif "nicMax" in filters.keys():
-        query = Product.query.join(Product.nics).filter(Nic.value <= int(filters["nicMax"]))
+        query = query.join(Product.nics).filter(Nic.value <= int(filters["nicMax"]))
 
     return query.limit(end-start).offset(start).all()
 

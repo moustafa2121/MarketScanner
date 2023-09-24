@@ -6,41 +6,58 @@ paginationManager = (function () {
     //the current page number
     let pageNumber = 1;
     //the total pages available to go through
-    const totalPages = parseInt(document.getElementById("totalPagesHolder").textContent);
+    let totalPages = parseInt(document.getElementById("totalPagesHolder").textContent);
     //used for pages that are beyond the current page to indicate
     //there are pages inbetween
     const placeHolderValue = '...'
 
     return {
-        currentPage: () => { return pageNumber },
+        currentPage: () => pageNumber,
         setCurrentPage: (passedValue) => { pageNumber = passedValue; },
-        totalPages: totalPages,
+        totalPages: () => totalPages,
+        setTotalPages: (value) => totalPages = value,
         placeHolderValue: placeHolderValue,
         pageInc: () => { return pageNumber += 1; },//increment the current page
         pageDec: () => { return pageNumber -= 1; },//decremeent the current page
     }
 })();
 
+//called when filter is applied and the table has to be refreshed
+//it takes the total pages of the now filter items, and total items
+//as such it will invoke the refresh table, thus creating new paginationArray
+//and re-displaying all the data
+//also resets the data held in storage for the adjacent tables
+async function onFilterChange(newTotalPages, newTotalItems) {
+    console.log("this is refresh the table: ", newTotalPages)
+    const totalItems = document.getElementById("resultsElement");
+    totalItems.textContent = newTotalItems.toString() + " item" + (newTotalItems > 1 ? "s" : "") + " found"
+
+    paginationManager.setTotalPages(newTotalPages);
+    refreshTable(1, newTotalPages, displayTable=true, resetData=true);
+}
+
 //on page load
 window.addEventListener("load", () => {
     //set the pagination depending on the current page
-    refreshTable(paginationManager.currentPage(), paginationManager.totalPages, displayTable=false);
+    refreshTable(paginationManager.currentPage(), paginationManager.totalPages(), displayTable=false);
 
     //set the event listener for the previous page and next page buttons
     document.getElementById("prevPage").addEventListener("click", () => {
         //decrement the current page
         paginationManager.pageDec();
         //set the pagination
-        refreshTable(paginationManager.currentPage(), paginationManager.totalPages);
+        refreshTable(paginationManager.currentPage(), paginationManager.totalPages());
     });
     document.getElementById("nextPage").addEventListener("click", () => {
         paginationManager.pageInc();
-        refreshTable(paginationManager.currentPage(), paginationManager.totalPages);
+        refreshTable(paginationManager.currentPage(), paginationManager.totalPages());
     });
 });
 
-//refreshes the table based on the changes in page number
-function refreshTable(pageNumber, totalPages, displayTable = true) {
+//refreshes the table based on the given page number
+//used by moving to next pages
+//also used by the first page refresh, but display is disabled
+function refreshTable(pageNumber, totalPages, displayTable = true, resetData = false) {
     //the array of values from the first to the last button
     const paginationArray = paginationArrayFactory(pageNumber, totalPages);
 
@@ -49,7 +66,7 @@ function refreshTable(pageNumber, totalPages, displayTable = true) {
 
     //invoke the loading of table and the data of the 
     //previous / next tables
-    loadTheTable(pageNumber, paginationArray, displayTable=displayTable);
+    loadTheTable(pageNumber, paginationArray, displayTable = displayTable, resetData = resetData);
 }
 
 //the function that handles the changes to the pages
@@ -88,7 +105,7 @@ function setThePagination(pageNumber, paginationArray) {
     //disable/enable the prevPage/nextPage buttons depending 
     //on whats the value of the new current page
     disableOnValue(document.getElementById("prevPage"), 1);
-    disableOnValue(document.getElementById("nextPage"), paginationManager.totalPages);
+    disableOnValue(document.getElementById("nextPage"), paginationManager.totalPages());
 }
 
 //sets a listener for the page buttons
@@ -98,7 +115,7 @@ function setPageButtonEventListener(pageEle) {
             //set the new current page
             paginationManager.setCurrentPage(parseInt(pageEle.text));
             //set the pagination
-            refreshTable(paginationManager.currentPage(), paginationManager.totalPages);
+            refreshTable(paginationManager.currentPage(), paginationManager.totalPages());
         }
     });
 }

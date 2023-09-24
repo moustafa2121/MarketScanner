@@ -5,7 +5,7 @@
 //and fetching them if available
 const adjacentTablesHandler = (function () {
     //holds the tableProducts in an array
-    let tableProductsArr = []
+    let tableProductsArr = [];
     return {
         //get the table product if available in the frontend memory
         getTableProduct: (pageNumber) => {
@@ -33,16 +33,20 @@ const adjacentTablesHandler = (function () {
             tableProductsArr = tableProductsArr.filter(item => paginationArray.includes(item.pageNumber));
             //get the items that are only in the paginationArray but 
             //not in intersection, they will be fetched and added
-            for (const page of paginationArray)
+            for (const page of paginationArray) {
+                //console.log("adjacent table: ", page);
                 //if it is not in the intersection, fetch and add
-                if (!intersection.includes(page))
+                if (!intersection.includes(page)) {
+                    //console.log("fetching: ", page);
                     tableProductsArr.push(await getTableData(page));
+                }
+            }
         },
         //a reference to to the tableProductsArr
         tableProductsArr: () => tableProductsArr,
+        resetTable: () => { tableProductsArr = []; },
     };
 })();
-
 
 //holds a list of Product objects and the page
 //number of the table they belong to
@@ -75,9 +79,13 @@ class Product {
 //the dispalyTable is set to false on the first page load since we do not want
 //to dispaly the first page since it is already loaded
 //however we want to invoke the adjacentTablesHolder.loadAdjacentTables
-async function loadTheTable(pageNumber, paginationArray, displayTable=true) {
+//resetData is invoked when filter is applied
+async function loadTheTable(pageNumber, paginationArray, displayTable=true, resetData=false) {
     //disable page navigation during fetching and displaying
     enablePagination(false);
+
+    if (resetData)
+        adjacentTablesHandler.resetTable();
 
     //for most cases the displayTable is true
     if (displayTable) {
@@ -87,6 +95,7 @@ async function loadTheTable(pageNumber, paginationArray, displayTable=true) {
         if (!tableProducts)
             tableProducts = await getTableData(pageNumber);
 
+        console.log(tableProducts);
         //display the table
         displayTableRows(tableProducts);
     }
@@ -99,7 +108,10 @@ async function loadTheTable(pageNumber, paginationArray, displayTable=true) {
 
 //given a page number, it will fetch data corresponding to it
 function getTableData(pageNumber) {
-    return fetch(`/moredata/${pageNumber}`, {
+    let filterPattern = filterValuesHolder.currentFilterPattern()
+    if (filterPattern !== "all")
+        filterPattern = filterDataToGetFormat(filterPattern)
+    return fetch(`/moredata/${pageNumber}/${filterPattern}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",

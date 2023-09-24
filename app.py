@@ -70,8 +70,12 @@ def create_app():
                         "sizeList":sizeList,
                         "vgpgList":vgpgList,
                         "websiteList":websiteList}
-        
-        return json.dumps({"filterValues": filterValues})
+
+        totalPages = math.ceil(len(allProducts)/itemsPerPage)
+
+        return json.dumps({"filterValues": filterValues,
+                           "totalPages":totalPages,
+                           "totalItems":len(allProducts)})
 
 
     #todo: prevent users from calling it directly, only for fetchAPI
@@ -94,12 +98,18 @@ def create_app():
     #called on in the background from the front end
     #it fetches pages to be loaded dynmically in the frontend
     #returns a json with the data equalling [itemsPerPage] items
-    @app.route('/moredata/<pageNumber>/', methods=['GET'])
-    def getMoreItems(pageNumber):
+    @app.route('/moredata/<pageNumber>/<values>', methods=['GET'])
+    def getMoreItems(pageNumber, values):
         import models
+
+        print(values)
         dataRangeStart, dataRangeEnd = dataRangerFinder(int(pageNumber))
-        products = models.getProducts(dataRangeStart, dataRangeEnd)
-        
+        if values == "all":
+            products = models.getProducts(dataRangeStart, dataRangeEnd)
+        else:
+            filterDict = cleanFilterPattern(values)
+            products = models.filterProducts(filterDict, dataRangeStart, dataRangeEnd)
+
         #serialize and return
         return json.dumps({"returnValue": models.serializeProducts(products)})
         
