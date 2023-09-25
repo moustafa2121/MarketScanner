@@ -80,3 +80,19 @@ function matchTwoObjects(objA, objB) {
     //if all checks out, return true
     return true;
 }
+
+//closure that provide a function to show page alerts
+const pageAlert = (() => {
+    const pageAlert = document.getElementById("pageAlert");
+    pageAlert.querySelector("button").addEventListener("click", () => {
+        pageAlert.style.display = "none";
+    });
+
+    return (messageText, fadeOutDuration=4000) => {
+        pageAlert.querySelector("div").textContent = messageText;
+        pageAlert.style.display = "inline-block";
+        setTimeout(() => {
+            pageAlert.style.display = "none";
+        }, fadeOutDuration);
+    }
+})();

@@ -15,10 +15,9 @@ const updateFilterModal_display = (() => {
 
     //display the filter data
     //checks the filterPattern, if an input is in the filterPattern, diables it
-    //if diableAll is true, disable all inputs, generally when only 1 element is displayed
+    //if diableAll is true, disable all inputs, generally used when only 1 element is displayed
+    //also show filter tags above the table
     return (filterData, filterPattern, disableAll=false) => {
-        console.log("filterGot: ", filterPattern);
-
         const brandLst = filterData['brandList']
         const nicList = filterData['nicList']
         const sizeList = filterData['sizeList']
@@ -53,6 +52,10 @@ const updateFilterModal_display = (() => {
         setOptionElements(vgpgList, vgpgFilterSelect, (disableAll || Object.keys(filterPattern).includes("vgpgInput")));
         //set the brand filer
         setOptionElements(brandLst, brandFilterSelect, (disableAll || Object.keys(filterPattern).includes("brandInput")));
+
+        //set the filter button to indicate how many filters has been applied
+        const patternLength = typeof(filterPattern) === "object" ? Object.keys(filterPattern).length : 0;
+        setTimeout(() => { filterValuesHolder.updateFilterButton(patternLength); }, 500);
     }
 })();
 
@@ -63,7 +66,7 @@ const updateFilterModal_display = (() => {
 //a signal to refresh the filter data, sent by the homepage
 const filterValuesHolder = (function () {
     //the button that opens the filter
-    const filterButton = document.querySelector("#filterSortHolder button");
+    const filterButton = document.querySelector("#filterSortHolder > button");
     //enable/disables the button
     enableFilterButton = (enable) => {
         if (enable) {
@@ -93,7 +96,7 @@ const filterValuesHolder = (function () {
     //pre-processor for updating the display of the filter
     //(acts as the second step in filter handling)
     //called on when the page just starts, and by the modal when the user inputs
-    //the filter input and presses on "Apply"
+    //the filter data and clicks on "Apply"
     //takes the filter pattern (after cleaning) and refreshTheTable which 
     //determines if the table's data should be refreshed and follow the filtered data
     async function updateFilterModal(filterPattern, refreshTheTable = true) {
@@ -166,7 +169,7 @@ const filterValuesHolder = (function () {
                 onFilterChange(newTotalPages, newTotalItems);
         }
         else{//0 items in filtered
-            //todo: message says no items matched the filter
+            pageAlert("No items match the filter.");
         }
         enableFilterButton(true);
     }
@@ -175,6 +178,7 @@ const filterValuesHolder = (function () {
     return {
         currentFilterPattern: () => currentFilterPattern,
         updateFilterModal: updateFilterModal,
+        updateFilterButton: (value) => { filterButton.querySelector("span").textContent = `Filters (${value})`; },
         resetFilterModal: () => {
             currentFilterPattern = "all";
             currentFilterData = localStorage.getItem("allFilterDict");
@@ -232,7 +236,6 @@ const filterFormHandler = (function () {
         }
     });
 
-
     //a listener for the form's submit button
     //(acts as the first step in filter handling)
     //validates data, if valid return them to db to get filtered data
@@ -256,9 +259,6 @@ const filterFormHandler = (function () {
 
         //if the form at the start of opening the filter modal and the form submitted when the
         //user clicks on the "apply" button do not match, show a message and keep the modal open
-        console.log(JSON.parse(JSON.stringify(filterJson)));
-        console.log(JSON.parse(JSON.stringify(currentFilterJson)));
-        console.log("match: ", matchTwoObjects(JSON.parse(JSON.stringify(filterJson)), JSON.parse(JSON.stringify(currentFilterJson))));
         if (matchTwoObjects(JSON.parse(JSON.stringify(filterJson)), JSON.parse(JSON.stringify(currentFilterJson)))) {
             addFilterMessage.displayMessage("No changes detected.");
             return;
@@ -284,7 +284,6 @@ const filterFormHandler = (function () {
             //if the filter object is not empty, update the filter modal
             if (Object.keys(filterJson).length > 0) {
                 filterFormCloseButton.click();
-
                 filterValuesHolder.updateFilterModal(filterJson);
             }
         }
@@ -370,7 +369,7 @@ const addFilterMessage = (function () {
 
 //appends a badge after the <select> element (usually the brand and vgpg)
 //it is called after one of the <select> options are clicked (if the option is valid)
-function appendFilterBadge(text, prevSibling) {
+function appendFilterBadge_select(text, prevSibling) {
     //the main badge container
     const spanContainer = document.createElement("span");
     spanContainer.classList.add("badge");
@@ -420,7 +419,7 @@ function handleSelectFilterChange(event, maxBadgesValue) {
             }
         }
         if (!invalidCheck)//all is valid, append badge
-            appendFilterBadge(newValue, this);
+            appendFilterBadge_select(newValue, this);
     }
 }
 

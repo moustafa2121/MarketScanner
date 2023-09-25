@@ -31,6 +31,38 @@ main {
     position: relative;
     margin-top: 5px;
 }
+
+/* page alert message*/
+#pageAlert {
+    position: absolute;
+    padding: 0 !important;
+    margin: 0;
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    height: 50px;
+    min-width: 10vw;
+    max-width: 70vw;
+}
+#pageAlert > div{
+    display: inline-block;
+    position: relative !important;
+    padding: 13px 0px 13px 13px;
+    max-width:90%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+#pageAlert > button{
+    display: inline-block;
+    position: relative !important;
+    top: -16px;
+    margin-left:20px;
+    padding: 13px 20px 13px 0px;
+    bottom:15px;
+}
+
 /* the filter and pagination for the table*/
 #tableFilterSection {
     padding: 0;
@@ -40,11 +72,15 @@ main {
     grid-template-columns: 65% 10% 25%;
 }
 #filterSortHolder {
-    border: 1px solid black;
+    /*border: 1px solid black;*/
 }
-#filterSortHolder button{
+#filterSortHolder > button{
     margin-top:5px;
     margin-left:10px;
+    font-size:1.3em;
+}
+#filterSortHolder #filterSortBadges{
+    display:inline-block;
 }
 
 #resultsElement {
@@ -363,24 +399,24 @@ table tr:hover {
     margin:2px 0 0 10px;
 }
 
-/*filter pills */
-span.badge {
+/*filter pills/badge for the select of nic and vgpg */
+#filterForm span.badge {
     margin: 0 0 0 6px;
     padding: 2px 2px 0px 4px;
     cursor: default;
     background-color: #7c95ae !important;
 }
-span.badge button{
-    padding:0;
-    width:8px;
-    margin:1px 2px 3px 3px;
-    vertical-align:middle;
-    color:gray
+#filterForm span.badge button {
+    padding: 0;
+    width: 8px;
+    margin: 1px 2px 3px 3px;
+    vertical-align: middle;
+    color: gray
 }
-#brandFilterDiv span.badge {
+#filterForm #brandFilterDiv span.badge {
     max-width: 15.5%;
 }
-#brandFilterDiv span.badge span{
+#filterForm #brandFilterDiv span.badge span{
     display:inline-block;
     max-width:70%;
     overflow: hidden;
