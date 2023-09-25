@@ -59,12 +59,10 @@ def create_app():
         print("filter fetcher, pattern:", values)
         if values != "all":
             filters = cleanFilterPattern(values)
-            print(filters)
             allProducts = models.filterProducts(filters)
         else:
             allProducts = models.getAllProducts()
         brandList, nicList, sizeList, vgpgList, websiteList = models.getItemsFilterList(allProducts)
-
         filterValues = {"brandList":brandList,
                         "nicList":nicList,
                         "sizeList":sizeList,
@@ -77,22 +75,6 @@ def create_app():
                            "totalPages":totalPages,
                            "totalItems":len(allProducts)})
 
-
-    #todo: prevent users from calling it directly, only for fetchAPI
-    #todo: if invalid redirect to homepage
-    #applies the filter sent back by the user from the front end
-    @app.route('/filterapplier/<values>', methods=['GET'])
-    def filterApplier(values):
-        import models
-        print("filter")
-        filterDict = cleanFilterPattern(values)
-        print(filterDict)
-
-        dataRangeStart, dataRangeEnd = dataRangerFinder(1)
-        filteredData = models.filterProducts(filterDict, dataRangeStart, dataRangeEnd)
-        
-        return json.dumps({"filteredData": models.serializeProducts(filteredData)})
-
     #todo: prevent users from calling it directly, only for fetchAPI
     #todo: if invalid redirect to homepage
     #called on in the background from the front end
@@ -101,15 +83,13 @@ def create_app():
     @app.route('/moredata/<pageNumber>/<values>', methods=['GET'])
     def getMoreItems(pageNumber, values):
         import models
-
-        print(values)
         dataRangeStart, dataRangeEnd = dataRangerFinder(int(pageNumber))
         if values == "all":
             products = models.getProducts(dataRangeStart, dataRangeEnd)
         else:
             filterDict = cleanFilterPattern(values)
             products = models.filterProducts(filterDict, dataRangeStart, dataRangeEnd)
-
+        
         #serialize and return
         return json.dumps({"returnValue": models.serializeProducts(products)})
         
@@ -194,6 +174,7 @@ def cleanFilterPattern(values):
     for value in values:
         value = urllib.parse.unquote(value)
         field, value = value.split("=")
+        value = value.replace("*", "&")
         if field == "vgpgInput":
             filterDict[field] = value.split(",")
         elif field == "brandInput":

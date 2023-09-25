@@ -352,6 +352,7 @@ table tr:hover {
     --bs-btn-hover-bg: #617f9c;
     --bs-btn-hover-border-color: #617f9c;
     --bs-btn-active-bg: #617f9c;
+    --bs-btn-disabled-bg: #617f9c;
 }
 .modal-footer {
     width: 100%;

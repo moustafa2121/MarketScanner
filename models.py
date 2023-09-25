@@ -281,7 +281,12 @@ def filterProducts(filters, start=0, end=9999):
     elif "nicMax" in filters.keys():
         query = query.join(Product.nics).filter(Nic.value <= int(filters["nicMax"]))
 
-    return query.limit(end-start).offset(start).all()
+    #for some reason this returns some funky results. they are
+    #correctly filtered but they are returned in arbitrary sizes
+    #as in they do not abide by the limit, this only happens with the min and max filters
+    #so we have to get all items and use regular python list slicing which is suboptimal
+    #return query.limit(end-start).offset(start).all()
+    return query.all()[start:end]
 
 
 
