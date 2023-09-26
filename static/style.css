@@ -1,32 +1,38 @@
+html{
+    height:100vh;
+    width:100vw;
+}
+body {
+    height: 100vh;
+    width: 100vw;
+}
+
 /* top navigation bar*/
-.navbar {
+header {
     height: 20vh;
+    width: 100vw;
+    max-height: 20vh !important;
 }
 
 .titleContainer {
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     background-color: black;
 }
-
 #navBarTitle {
-    font-size: 120px;
+    max-height: 20vh !important;
+    font-size: 10vh;
+    color: #FDDC5C;
     text-transform: uppercase;
     font-family: 'Gambetta', serif;
-    letter-spacing: -3px;
     transition: 700ms ease;
     padding: 10px 0 0 0;
-    color: #FDDC5C;
     outline: none;
     text-align: center;
 }
 
 /* main */
 main {
-    height: 70vh;
+    height: 69%;
     box-sizing: border-box;
     position: relative;
     margin-top: 5px;
@@ -382,7 +388,7 @@ table tr:hover {
     width: 48% !important;
 }
 
-#filterSortModal form .modal-footer button {
+#filterSortModal form .modal-footer button, #ageVerificationModal button{
     --bs-btn-bg: #7c95ae;
     --bs-btn-border-color: #7c95ae;
     --bs-btn-hover-bg: #617f9c;
@@ -437,16 +443,41 @@ table tr:hover {
     cursor: default;
 }
 
+/* age verification modal */
+#ageVerificationModal .modal-content{
+    padding:16px;
+}
+
 /* footer */
 footer {
     padding: 0;
-    margin: 50px 0 0 0;
-    height: 4vh;
     width: 100vw;
-    text-align: center;
+    max-width:100vw;
     background-color: black;
     color: white;
-    position: relative;
-    bottom: 0;
-    left: 0;
+    position: sticky;
+    top: 100vh;
+    height: 10vh;
+}
+footer > h4{
+    font-size:1vw;
+    color: #FDDC5C;
+    max-width:90%;
+    padding:0px 50px 0px 50px;
+    margin:0;
+    display:inline-block;
+    position:relative;
+    text-align:left;
+    top:10px;
+}
+
+footer > button{
+    display:inline-block;
+    position:absolute;
+    right:50px;
+    top: 25%;
+    background-color: #FDDC5C;
+    height:50%;
+    width:8%;
+    font-size:1.4em;
 }

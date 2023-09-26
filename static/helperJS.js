@@ -1,6 +1,5 @@
-
 //the zoom in feature of the images
-const _ = (function () {
+(() => {
     //get the modal elements
     const modal = document.getElementById("imgModal");
     const imgModalClose = document.getElementById("imgModalClose");
@@ -39,15 +38,14 @@ const _ = (function () {
     }
 })();
 
-const enablePagination = (function () {
+//enables and disables the pagintion bar
+const enablePagination = (() => {
     const paginationHolder = document.getElementById("paginationHolder");
     return function (enable) {
-        if (!enable) {
+        if (!enable)
             paginationHolder.classList.add("disabled")
-        }
-        else {
+        else 
             paginationHolder.classList.remove("disabled")
-        }
     }
 })();
 
@@ -94,5 +92,44 @@ const pageAlert = (() => {
         setTimeout(() => {
             pageAlert.style.display = "none";
         }, fadeOutDuration);
+    }
+})();
+
+
+//+18 verification handler handler
+(() => {
+    const ageVerificationModal = document.getElementById("ageVerificationModal");
+    //set up the modal
+    const modal = new bootstrap.Modal(ageVerificationModal, {
+        backdrop: 'static',
+        keyboard: false,
+    });
+    //if the verification not in the localstroage, show the modal
+    const ageVerify = localStorage.getItem("ageVerify")
+    if (!ageVerify)
+        modal.show();
+
+    //if confirmation is clicked, remove the modal and make sure it won't appear again
+    ageVerificationModal.querySelector("#confirmAgeButton").addEventListener("click", () => {
+        modal.hide();
+        localStorage.setItem("ageVerify", "verified");
+    });
+    //if the age is not confirmed, buy a beard
+    ageVerificationModal.querySelector("#cancelAgeButton").addEventListener("click", () => {
+        location.assign('https://www.amazon.com/Realistic-Beard/s?k=Realistic+Beard');
+    });
+})();
+
+//show the footer if it is not read by the user
+//provide a listner for the footer button to close it and store in the
+//local storage that it has beenr ead
+(() => {
+    const footerButton = document.querySelector("footer > button");
+    if (!localStorage.getItem("footerRead")) {
+        document.querySelector("footer").style.display = "block";
+        footerButton.addEventListener("click", () => {
+            document.querySelector("footer").style.display = "none";
+            localStorage.setItem("footerRead", "read");
+        });
     }
 })();

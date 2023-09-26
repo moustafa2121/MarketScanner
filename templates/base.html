@@ -18,13 +18,32 @@
     <meta charset="utf-8">
 </head>
 <body class="bg-body-tertiary">
-    <header class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid titleContainer">
+    <header class="navbar bg-body-tertiary">
+        <div class="titleContainer">
             <h1 id="navBarTitle" class="navbar-brand">Vape Finder</h1>
         </div>
     </header>
+    
+    <!-- age Verification Modal -->
+    <div class="modal fade" id="ageVerificationModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ageVerificationModalLabel">Age Verification</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Are you over 21 years of age?</p>
+                    <p>Access to this site is restricted to people of legal smoking age only.</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="confirmAgeButton" type="button" class="btn btn-primary">Yes, I am of Legal Age</button>
+                    <button id="cancelAgeButton" type="button" class="btn btn-primary">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- alert message -->
+    <!-- alert messages -->
     <div id="pageAlert" style="display:none" class="alert alert-warning alert-dismissible fade show">
         <div></div>
         <button type="button" class="btn-close">
@@ -48,9 +67,14 @@
         {% endblock bodyblock %}
     </main>
 
-    <!--<footer>
-        this is footer
-    </footer>-->
+    <footer class="footer" style="display:none">
+        <h4>
+            Crawling of the items from the original source website may not always yield perfect results due to the poor HTML structure of some sites. As a result, some data on this website may appear as "No Data" in the table.
+            Please note that we do not own or claim any rights to the data displayed here; all data belongs to their respective websites.
+            This website does not endorse or promote smoking or vaping in any way. We encourage our visitors to make informed and responsible choices regarding their health and well-being.
+        </h4>
+        <button><b>Got it</b></button>
+    </footer>
 </body>
 </html>
 

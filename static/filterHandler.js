@@ -266,8 +266,8 @@ const filterFormHandler = (function () {
                         
         //validate the min and max values
         if ((filterJson.nicMin !== "-1" || filterJson.nicMax != "999" || filterJson.sizeMin != "-1" || filterJson.sizeMax != "999")
-            && (filterJson.nicMin >= filterJson.nicMax || filterJson.sizeMin >= filterJson.sizeMax))
-            addFilterMessage.displayMessage("Max value must be larger than min value.");
+            && (filterJson.nicMin > filterJson.nicMax || filterJson.sizeMin > filterJson.sizeMax))
+            addFilterMessage.displayMessage("Max value must be larger/equal than the min value.");
         else {//send to db
             //check if values in the json are filled by the user, 
             //otherwise delete them from the object
