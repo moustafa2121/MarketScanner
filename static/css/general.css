@@ -1,0 +1,162 @@
+html, body{
+    height:100vh;
+    width:100vw;
+}
+
+/* top navigation bar */
+header {
+    height: 20vh;
+    width: 100vw;
+    max-height: 20vh !important;
+    padding:0 !important;
+}
+.titleContainer {
+    width: 100%;
+    background-color: black;
+}
+#navBarTitle {
+    max-height: 20vh !important;
+    font-size: 10vh;
+    color: #FDDC5C;
+    text-transform: uppercase;
+    font-family: 'Gambetta', serif;
+    transition: 700ms ease;
+    padding: 10px 0 0 0;
+    outline: none;
+    text-align: center;
+}
+
+/* main */
+main {
+    height: 69%;
+    box-sizing: border-box;
+    position: relative;
+    margin-top: 5px;
+}
+
+/* the filter and pagination holder for the table */
+#tableFilterSection {
+    padding: 0;
+    height: 5vh;
+    margin: 0 10vw 5vh 10vw;
+    display: grid;
+    grid-template-columns: 65% 10% 25%;
+}
+
+/* for disabled buttons */
+.disabled {
+    cursor: default !important;
+    pointer-events: none;
+    color: gray;
+}
+
+/* the filter button*/
+#filterSortHolder > button{
+    margin-top:5px;
+    margin-left:10px;
+    font-size:1.3em;
+}
+
+/* displays how many items were fetched*/
+#resultsElement {
+    display: inline-block;
+    margin-top: 7px;
+    border: 1px solid black;
+}
+
+/* holds the pagination */
+#paginationHolder {
+    display: inline-block;
+    border: 1px solid black;
+}
+#paginationHolder ul {
+    margin: 0;
+    list-style: none;
+}
+.paginationList a {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+    cursor:pointer;
+}
+#innerPagesHolder .active {
+    background-color: dimgray;
+    color: white;
+    pointer-events:none;
+}
+.paginationList a:hover:not(.active) {
+    background-color: #ddd;
+}
+
+/* footer */
+footer {
+    padding: 0;
+    width: 100vw;
+    max-width:100vw;
+    background-color: black;
+    color: white;
+    position: sticky;
+    top: 100vh;
+    height: 10vh;
+}
+footer > h4{
+    font-size:1vw;
+    color: #FDDC5C;
+    max-width:90%;
+    padding:0px 50px 0px 50px;
+    margin:0;
+    display:inline-block;
+    position:relative;
+    text-align:left;
+    top:10px;
+}
+footer > button{
+    display:inline-block;
+    position:absolute;
+    right:50px;
+    top: 25%;
+    background-color: #FDDC5C;
+    height:50%;
+    width:8%;
+    font-size:1.4em;
+}
+
+/* page alert message*/
+#pageAlert {
+    position: absolute;
+    padding: 0 !important;
+    margin: 0;
+    top: 15%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    height: 50px;
+    min-width: 10vw;
+    max-width: 70vw;
+}
+
+    #pageAlert > div {
+        display: inline-block;
+        position: relative !important;
+        padding: 13px 0px 13px 13px;
+        max-width: 90%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    #pageAlert > button {
+        display: inline-block;
+        position: relative !important;
+        top: -16px;
+        margin-left: 20px;
+        padding: 13px 20px 13px 0px;
+        bottom: 15px;
+    }
+
+/* age verification modal */
+#ageVerificationModal .modal-content {
+    padding: 16px;
+}

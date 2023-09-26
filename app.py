@@ -1,3 +1,5 @@
+#the views for the app
+
 from flask_sqlalchemy import SQLAlchemy
 import dbExtract
 from flask import Flask, render_template, redirect, url_for
@@ -18,7 +20,7 @@ def create_app():
         
     #home page
     #this view mainly displays the data in the table of the 1st page
-    #other pages and filter data are taken care of by other views
+    #other pages and filter data are taken care of by the 'moredata' view
     @app.route('/', methods=['GET'])
     def homePage():
         import models
@@ -50,43 +52,49 @@ def create_app():
 
     #todo: if invalid redirect to homepage
     #todo: prevent users from calling it directly, only for fetchAPI
-    #fetches the data to be populated in the filter
-    #basically, given a filter pattern, it returns the narrowed down
+    #fetches the data to be populated in the filter modal
+    #Given a filter pattern, it returns the narrowed down
     #filter values. if the pattern is "all", sends all the filter data
+    #also returns how many Products and total pages for the given filter
     @app.route('/filterfetcher/<values>', methods=['GET'])
     def filterFetcher(values):
         import models
         print("filter fetcher, pattern:", values)
+        
+        #fetch the Products based on the filter passed
         if values != "all":
             filters = cleanFilterPattern(values)
             allProducts = models.filterProducts(filters)
         else:
             allProducts = models.getAllProducts()
-        brandList, nicList, sizeList, vgpgList, websiteList = models.getItemsFilterList(allProducts)
-        filterValues = {"brandList":brandList,
-                        "nicList":nicList,
-                        "sizeList":sizeList,
-                        "vgpgList":vgpgList,
-                        "websiteList":websiteList}
+        
+        #get the filterData based on the Products fetched (for further filtering)
+        brandList, nicList, sizeList, vgpgList, websiteList = models.getFilterData(allProducts)
 
-        totalPages = math.ceil(len(allProducts)/itemsPerPage)
-
-        return json.dumps({"filterValues": filterValues,
-                           "totalPages":totalPages,
+        return json.dumps({"filterValues": {"brandList":brandList,
+                                            "nicList":nicList,
+                                            "sizeList":sizeList,
+                                            "vgpgList":vgpgList,
+                                            "websiteList":websiteList},
+                           "totalPages":math.ceil(len(allProducts)/itemsPerPage),
                            "totalItems":len(allProducts)})
 
     #todo: prevent users from calling it directly, only for fetchAPI
     #todo: if invalid redirect to homepage
-    #called on in the background from the front end
+    #called on in the background from the frontend
     #it fetches pages to be loaded dynmically in the frontend
     #returns a json with the data equalling [itemsPerPage] items
+    #the pageNumber is the page requested for the items to be displayed
+    #the values is the filter to be applied on the Products.
     @app.route('/moredata/<pageNumber>/<values>', methods=['GET'])
     def getMoreItems(pageNumber, values):
         import models
+        #calculate the range of the products based on pageNumber
         dataRangeStart, dataRangeEnd = dataRangerFinder(int(pageNumber))
-        if values == "all":
+        #fetch the products
+        if values == "all":#get all products
             products = models.getProducts(dataRangeStart, dataRangeEnd)
-        else:
+        else:#get filtered products
             filterDict = cleanFilterPattern(values)
             products = models.filterProducts(filterDict, dataRangeStart, dataRangeEnd)
         
@@ -99,7 +107,7 @@ def create_app():
     def website():
         import models
         #1: get the json from the scraper/microservice
-        #metaValues, itemList = dbExtract.openJson('static/cleanJson_Vape Shop Dubai.json')
+        #metaValues, itemList = dbExtract.openJson('dbData/cleanJson_Vape Shop Dubai.json')
         
         #products = models.Product.query.all()
         #for product in products:
@@ -156,15 +164,18 @@ def create_app():
         return "olo"
     
 
+    #creates the DB
     with app.app_context():
         db.create_all()
 
     return app
 
 
+#below are helper functions
+
 #pre-processor for filtering data 
 #takes the filters sent from the frontend in a GET request
-#cleans them up and returns a dict that be used to fetch the
+#cleans them up and returns a dict to be used to fetch the
 #products that matches the filter
 def cleanFilterPattern(values):
     import urllib.parse
@@ -189,6 +200,7 @@ def dataRangerFinder(pageNumber):
     return (pageNumber-1) * itemsPerPage, pageNumber * itemsPerPage
 
 #attaches a cookie (if needed) to the given response
+#if a first time user, it generates a unique cookie id
 def attachCookie(response):
     import models
     user_id = request.cookies.get('user_id')

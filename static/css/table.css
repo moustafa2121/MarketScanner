@@ -1,0 +1,202 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:400,500,300,700);
+
+/* the table holder*/
+#tableContainerSection {
+    height: 100%;
+    margin: 0 10vw 0 10vw;
+    position: relative;
+}
+/* contains the table to create the scroll effect */
+#tableContainerDiv {
+    height: 100%;
+    margin: 0;
+    overflow: auto;
+}
+/* scroll bar styling*/
+::-webkit-scrollbar {
+    width: 12px;
+}
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    border-radius: 0;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 0px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+}
+
+/* the table */
+table {
+    font-family: 'Roboto', sans-serif;
+    border-collapse: collapse;
+    height: 100%;
+    width: 100%;
+}
+
+/* hides/displays rows if the table is not full */
+.hiddenRow {
+    display: none;
+}
+.visibleRow {
+    display: table-row;
+}
+
+
+
+/* the holder for each header. makes it absolute
+    and above the scroll bar */
+thead > tr > th > span {
+    position: absolute;
+    top: -34px;
+    z-index: 2;
+    height: 36px;
+    display: inline-block;
+    background-color: #5C7DFD !important;
+    padding-top: 7px;
+    text-align: center;
+    align-content: center;
+}
+/* class for each column: sets the width*/
+.imgColumn {
+    width: 5%;
+}
+.nameColumn {
+    width: 40%;
+}
+.nameColumn a {
+    text-underline-offset: 0.1em;
+}
+.brandColumn {
+    width: 15%;
+}
+.flavorColumn {
+    width: 18.75%;
+}
+.nicColumn {
+    width: 8%;
+}
+.sizeColumn {
+    width: 6%;
+}
+.vgpgColumn {
+    width: 8%;
+}
+
+.webIcon {
+    width: 28px;
+    height: 28px;
+    margin-right: 7px;
+}
+
+/* for each cell of the table*/
+td {
+    height: 70px;
+    border: 1px solid #ddd;
+    padding: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 1px !important; /*enforces the overflow of text*/
+}
+
+/* styling */
+table tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+.centerText {
+    text-align: center;
+}
+.leftAlign {
+    text-align: left;
+}
+table tr:hover {
+    background-color: #ddd;
+}
+.emptyCell {
+    color: gray;
+    cursor: default;
+}
+
+/* image of each row */
+.imgColumn img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.imgColumn img:hover {
+    opacity: 0.7;
+}
+
+/* modal that displays and zooms the iamge when the image
+    is clicked on
+*/
+/* The Modal (background) */
+#imgModal {
+    position: fixed;
+    z-index: 3;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: black;
+    background-color: rgba(0,0,0,0.9);
+}
+/* Modal Content (image) */
+#imgModalContent {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+    /* animation */
+    -webkit-animation-name: zoom;
+    -webkit-animation-duration: 0.6s;
+    animation-name: zoom;
+    animation-duration: 0.6s;
+}
+/* zoom effect */
+@-webkit-keyframes zoom {
+    from {
+        -webkit-transform: scale(0)
+    }
+
+    to {
+        -webkit-transform: scale(1)
+    }
+}
+@keyframes zoom {
+    from {
+        transform: scale(0)
+    }
+    to {
+        transform: scale(1)
+    }
+}
+
+/* close button for the modal */
+#imgModalClose {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+#imgModalClose:hover #imgModalClose:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px) {
+    #imgModalContent {
+        width: 100%;
+    }
+}

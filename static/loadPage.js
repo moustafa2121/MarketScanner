@@ -1,6 +1,11 @@
+// script that handles initial loading of the page
+//sets up the event listeners for pagination, pagination appearance
+//handling pagination events, and making requests to main.js of refreshing the table
+//also handles requests to refresh the table after filter was applied
+
 /*
 a closure that is used to hold the values of the 
-pagination of the table
+pagination of the table, get, set, increment/decrement the page numbers
 */
 paginationManager = (function () {
     //the current page number
@@ -28,20 +33,25 @@ paginationManager = (function () {
 //and re-displaying all the data
 //also resets the data held in storage for the adjacent tables
 async function onFilterChange(newTotalPages, newTotalItems) {
-    console.log("this is refresh the table: ", newTotalPages)
+    //change the total items displayed
     const totalItems = document.getElementById("resultsElement");
     totalItems.textContent = newTotalItems.toString() + " item" + (newTotalItems > 1 ? "s" : "") + " found"
 
+    //change the total pages (as given by the filter functions)
     paginationManager.setTotalPages(newTotalPages);
+
+    //refresh the table data displayed, reset the data of the adjacent tables
     refreshTable(1, newTotalPages, displayTable=true, resetData=true);
 }
 
 //on page load
 window.addEventListener("load", () => {
-    //set the pagination depending on the current page
+    //set the pagination values depending on the current page and total pages
     refreshTable(paginationManager.currentPage(), paginationManager.totalPages(), displayTable=false);
 
-    //set the event listener for the previous page and next page buttons
+    //set the event listener for the previous/next page buttons
+    //when the user move through the pages, refresh the new available pages
+    //and the data displayed in the table
     document.getElementById("prevPage").addEventListener("click", () => {
         //decrement the current page
         paginationManager.pageDec();
@@ -54,18 +64,20 @@ window.addEventListener("load", () => {
     });
 });
 
-//refreshes the table based on the given page number
-//used by moving to next pages
-//also used by the first page refresh, but display is disabled
+//refreshes the table, displayed data based on the given page 
+//used by moving to next/prev pages, clicking on page numbers
+//also used on loading the page initially to set up the pagination
+//but display is disabled since the table is populated by html intially
 function refreshTable(pageNumber, totalPages, displayTable = true, resetData = false) {
-    //the array of values from the first to the last button
+    //the array of pages from the first to the last button
+    //calculated depending ont he current page and total pages
     const paginationArray = paginationArrayFactory(pageNumber, totalPages);
 
-    //set the pagination
+    //set the pagination display
     setThePagination(pageNumber, paginationArray);
 
     //invoke the loading of table and the data of the 
-    //previous / next tables
+    //previous/next tables depending on the paginationArray
     loadTheTable(pageNumber, paginationArray, displayTable = displayTable, resetData = resetData);
 }
 
@@ -108,13 +120,13 @@ function setThePagination(pageNumber, paginationArray) {
     disableOnValue(document.getElementById("nextPage"), paginationManager.totalPages());
 }
 
-//sets a listener for the page buttons
+//a listener for the page buttons when clicked
 function setPageButtonEventListener(pageEle) {
     pageEle.addEventListener("click", () => {
         if (!pageEle.classList.contains('active')) {
             //set the new current page
             paginationManager.setCurrentPage(parseInt(pageEle.text));
-            //set the pagination
+            //set the pagination/display new data
             refreshTable(paginationManager.currentPage(), paginationManager.totalPages());
         }
     });

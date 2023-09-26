@@ -40,7 +40,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
-    <Content Include="static\cleanJson_Vape Shop Dubai.json" />
+    <Content Include="dbData\cleanJson_Vape Shop Dubai.json" />
+    <Content Include="static\css\filterModal.css">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="static\css\table.css">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="static\filterHandler.js">
       <SubType>Code</SubType>
     </Content>
@@ -56,7 +62,7 @@
     <Content Include="static\main.js">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="static\style.css">
+    <Content Include="static\css\general.css">
       <SubType>Code</SubType>
     </Content>
     <Content Include="static\vapeFavIcon.png" />
@@ -79,6 +85,8 @@
     </Interpreter>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="dbData\" />
+    <Folder Include="static\css\" />
     <Folder Include="templates\" />
     <Folder Include="static\" />
   </ItemGroup>

@@ -1,3 +1,10 @@
+// responsible for updating the tables with the correct data
+// also fetches and holds data of adjacent tables (i.e. tables of pages
+// adjacent to the current page) for faster navigation for the user
+//usually called on by the loadPage.js through its pageination listeners
+//and when a filter is applied
+
+
 //holds the tables that are adjacent to the current table
 //this is to ensure that the pages that are visible to the
 //user can be loaded quickly since they are saved locally
@@ -7,32 +14,34 @@ const adjacentTablesHandler = (function () {
     //holds the tableProducts in an array
     let tableProductsArr = [];
     return {
-        //get the table product if available in the frontend memory
+        //get the table product if already saved in the array
         getTableProduct: (pageNumber) => {
             for (const tableProduct of tableProductsArr)
                 if (tableProduct.pageNumber == pageNumber)
                     return tableProduct
             return null;
         },
-        //used everytime the user navigates to a new page
-        //adds and removes the adjacent table as needed and stores them
+        //used everytime (almost) the user navigates to a new page
+        //adds/removes the adjacent table as needed and stores them
         loadAdjacentTables: async (paginationArray) => {
-            //trim the pagination array to remove the dots
+            //trim the pagination array to remove the dots (placeholder)
             //this array determines what tables to fetch as it represents
-            //the pages button visible in the pagination buttons 
-            //for the user to navigate
+            //the pages button visible in the pagination buttons for the user to navigate
             paginationArray = paginationArray.filter(item => item !== '...')
 
             //the intersection between the pagination array and the
             //productTables stored. the intersection represents pages
-            //that are not to be added nor removed
+            //that are not to be fetched from the backend nor removed from the array
+            //since they are both available in the array and adjacent to the current page
             const intersection = paginationArray.filter(item1 => tableProductsArr.some(item2 => item2.pageNumber === item1));
 
-            //intersection applied to the tableProducts. 
-            //items not in intersection will be discarded
+            //pages not in intersection and  are in tableProducts array will be discarded
+            //as they are not adjacent to the current page
             tableProductsArr = tableProductsArr.filter(item => paginationArray.includes(item.pageNumber));
-            //get the items that are only in the paginationArray but 
-            //not in intersection, they will be fetched and added
+
+            //get the items that are only in the paginationArray but
+            //not in intersection, they will be fetched and pushed to the array
+            //based on the page and the filter (fetched in the getTableData function)
             for (const page of paginationArray) {
                 //console.log("adjacent table: ", page);
                 //if it is not in the intersection, fetch and add
@@ -44,12 +53,12 @@ const adjacentTablesHandler = (function () {
         },
         //a reference to to the tableProductsArr
         tableProductsArr: () => tableProductsArr,
+        //reset the table, usually when refreshing the page or reseting the filter
         resetTable: () => { tableProductsArr = []; },
     };
 })();
 
-//holds a list of Product objects and the page
-//number of the table they belong to
+//holds a list of Product objects and the page number of the table they belong to
 class TableProducts {
     constructor(pageNumber, products) {
         this.pageNumber = pageNumber;
@@ -75,11 +84,11 @@ class Product {
     }
 }
 
-//this resets on refreshing the page, filter, and sort
+//displays the data of a given page number, usually invoked by pagination events/filtering
 //the dispalyTable is set to false on the first page load since we do not want
 //to dispaly the first page since it is already loaded
-//however we want to invoke the adjacentTablesHolder.loadAdjacentTables
-//resetData is invoked when filter is applied
+//however we want to invoke the adjacentTablesHolder.loadAdjacentTables function
+//resetData is usually invoked when filter is applied
 async function loadTheTable(pageNumber, paginationArray, displayTable=true, resetData=false) {
     //disable page navigation during fetching and displaying
     enablePagination(false);
@@ -95,8 +104,7 @@ async function loadTheTable(pageNumber, paginationArray, displayTable=true, rese
         if (!tableProducts)
             tableProducts = await getTableData(pageNumber);
 
-        console.log(tableProducts);
-        //display the table
+        //display the table data
         displayTableRows(tableProducts);
     }
     //load the adjacent tables as needed
@@ -107,6 +115,8 @@ async function loadTheTable(pageNumber, paginationArray, displayTable=true, rese
 }
 
 //given a page number, it will fetch data corresponding to it
+//applies the filter that is currently saved in the filter handler
+//returns a new TableProducts object
 function getTableData(pageNumber) {
     let filterPattern = filterValuesHolder.currentFilterPattern()
     if (filterPattern !== "all")
@@ -128,7 +138,7 @@ function getTableData(pageNumber) {
 
 //takes the tableProducts object for one page
 //and displays them by replacing the values of the rows in the table
-async function displayTableRows(tableProducts) {
+function displayTableRows(tableProducts) {
     const tableRows = document.querySelectorAll('tbody tr');
     //for each product to display (row)
     tableProducts.products.forEach((_, i) => {
@@ -177,7 +187,7 @@ async function displayTableRows(tableProducts) {
 
 //used to display the data of a cell
 //sets it to No Data if it is empty
-//sets the associate classes
+//sets the associated classes
 function displayCell(passedProduct, currentCell, classListNeg, classListPos) {
     if (passedProduct === 'No Data') {
         currentCell.textContent = 'No Data';

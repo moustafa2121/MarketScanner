@@ -1,4 +1,6 @@
-//the zoom in feature of the images
+//provides helper functions and handles miscellaneous features
+
+//the zoom in feature of the images in the table
 (() => {
     //get the modal elements
     const modal = document.getElementById("imgModal");
@@ -39,6 +41,8 @@
 })();
 
 //enables and disables the pagintion bar
+//usually used when the data of the current/adjacent tables are
+//loading/displayed the user does not jump between pages if data are unavailable
 const enablePagination = (() => {
     const paginationHolder = document.getElementById("paginationHolder");
     return function (enable) {
@@ -96,7 +100,7 @@ const pageAlert = (() => {
 })();
 
 
-//+18 verification handler handler
+//+18 verification modal handler
 (() => {
     const ageVerificationModal = document.getElementById("ageVerificationModal");
     //set up the modal
@@ -104,12 +108,12 @@ const pageAlert = (() => {
         backdrop: 'static',
         keyboard: false,
     });
-    //if the verification not in the localstroage, show the modal
+    //if the verification not in the localStroage, show the modal
     const ageVerify = localStorage.getItem("ageVerify")
     if (!ageVerify)
         modal.show();
 
-    //if confirmation is clicked, remove the modal and make sure it won't appear again
+    //if confirmation is clicked, remove the modal and make sure it won't appear again for this user
     ageVerificationModal.querySelector("#confirmAgeButton").addEventListener("click", () => {
         modal.hide();
         localStorage.setItem("ageVerify", "verified");
@@ -120,6 +124,7 @@ const pageAlert = (() => {
     });
 })();
 
+//closure that handles the footer declaimer
 //show the footer if it is not read by the user
 //provide a listner for the footer button to close it and store in the
 //local storage that it has beenr ead

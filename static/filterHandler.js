@@ -1,42 +1,52 @@
-//updates the filter modal data
-//usually called after the filter data were udpated or at the beginning
+//handles filtering of data by taking user input, displaying available
+//filter patterns based on the data displayed, validates filter input by the user
+//sends the filter pattern to the backend and checks if data match the filter
+//if there are available data, then it updates the filter patterns for further filtering
+//also invokes redisplaying of the table based on the filter
+
+//updates the filter modal data displayed
+//usually called after the filter data were updated or at the initial request of the page
 //(acts as the third step in filter handling)
 const updateFilterModal_display = (() => {
+    //get the filter containers
     const nicFilterContainer = document.querySelector("#nicFilterDiv .minMaxFiltersContainer");
     const sizeFilterContainer = document.querySelector("#sizeFilterDiv .minMaxFiltersContainer");
     const webFilterSelect = document.querySelector("#webFilterDiv select");
     const vgpgFilterSelect = document.querySelector("#vgpgFilterDiv select");
     const brandFilterSelect = document.querySelector("#brandFilterDiv select");
 
+    //remove their data
     function removeChildren(parent) {
         while (parent.firstChild)
             parent.removeChild(parent.firstChild);
     }
 
     //display the filter data
-    //checks the filterPattern, if an input is in the filterPattern, diables it
-    //if diableAll is true, disable all inputs, generally used when only 1 element is displayed
-    //also show filter tags above the table
-    return (filterData, filterPattern, disableAll=false) => {
+    //checks the filterPattern, if an input is in the filterPattern, disable it, 
+    //preventing further filtering of the same filter
+    //if diableAll is true, disable all inputs, generally used when only 1 Product is displayed
+    return (filterData, filterPattern, disableAll = false) => {
+        //get filter data
         const brandLst = filterData['brandList']
         const nicList = filterData['nicList']
         const sizeList = filterData['sizeList']
         const vgpgList = filterData['vgpgList']
         const websiteList = filterData['websiteList']
 
-        //remove the old elements first
+        //remove the old filter values first
         removeChildren(nicFilterContainer);
         removeChildren(sizeFilterContainer);
         removeChildren(webFilterSelect);
         removeChildren(vgpgFilterSelect);
         removeChildren(brandFilterSelect);
 
+        //disable if needed
         if (disableAll || Object.keys(filterPattern).includes("nameInput"))
             document.getElementById('nameInput').disabled = true;
         if (disableAll || Object.keys(filterPattern).includes("flavorInput"))
             document.getElementById('flavorInput').disabled = true;
 
-        //display new elements
+        //display new filters
         //nic min and max
         nicFilterContainer.appendChild(setRangeInputElements("nicMin", nicList, "Min", disableAll, filterPattern, "nicMin"));
         nicFilterContainer.appendChild(setRangeInputElements("nicMax", nicList, "Max", disableAll, filterPattern, "nicMax"));
@@ -45,7 +55,7 @@ const updateFilterModal_display = (() => {
         sizeFilterContainer.appendChild(setRangeInputElements("sizeMin", sizeList, "Min", disableAll, filterPattern, "sizeMin"));
         sizeFilterContainer.appendChild(setRangeInputElements("sizeMax", sizeList, "Max", disableAll, filterPattern, "sizeMax"));
 
-        //set up the <select> elements, disables the select if the datalist is only 1 item
+        //set up the <select> elements
         //set the website filters
         setOptionElements(websiteList, webFilterSelect, (disableAll || Object.keys(filterPattern).includes("websiteSelect")));
         //set the vgpg filter
@@ -53,21 +63,21 @@ const updateFilterModal_display = (() => {
         //set the brand filer
         setOptionElements(brandLst, brandFilterSelect, (disableAll || Object.keys(filterPattern).includes("brandInput")));
 
-        //set the filter button to indicate how many filters has been applied
+        //set the filter button to indicate how many filters have been applied
         const patternLength = typeof(filterPattern) === "object" ? Object.keys(filterPattern).length : 0;
         setTimeout(() => { filterValuesHolder.updateFilterButton(patternLength); }, 500);
     }
 })();
 
-//a closure fetches the data for the filter, saves it in localstorage
+//a closure fetches the data for the filter modal, saves it in localstorage
 //so they are only fetched when there is a change in the data
 //pre-processor for submitting the form filter (acts as the second step in filter handling)
 //todo: if there is a change in the backened, there has to be
 //a signal to refresh the filter data, sent by the homepage
 const filterValuesHolder = (function () {
-    //the button that opens the filter
+    //the button that opens the filter modal
     const filterButton = document.querySelector("#filterSortHolder > button");
-    //enable/disables the button
+    //enable/disables the above button
     enableFilterButton = (enable) => {
         if (enable) {
             filterButton.disabled = false;
@@ -78,11 +88,14 @@ const filterValuesHolder = (function () {
             filterButton.parentNode.title = "Fetching filter data, hold!";
         }
     }
-    //current filter patter and data, used for comparisons
+    //current filter pattern and data, used for comparisons and used
+    //by the loading of the table data to check what are the current filters applied
+    //filter pattern are the cleaned user input
     let currentFilterPattern = "all";
+    //the filter data available for filtering
     let currentFilterData = {};
 
-    //initial call of the filter modal update after page refresh
+    //initial call of the filter modal display, called after page refresh
     //filter pattern is the json produced after cleaning the filter form input
     let filterPattern = localStorage.getItem("filterPattern");
     //if not in local storage, set it to "all" representing all data filter
@@ -150,8 +163,8 @@ const filterValuesHolder = (function () {
             console.log("filter returned");
             console.log(filterData);
 
+            //save the filter data if the newTotalItems are not 0
             if (newTotalItems !== 0) {
-                //save the filter data if the newTotalItems are not 0
                 localStorage.setItem("filterPattern", JSON.stringify(filterPattern));
                 localStorage.setItem("filterData", JSON.stringify(filterData));
                 currentFilterPattern = filterPattern;
@@ -164,11 +177,11 @@ const filterValuesHolder = (function () {
         //update the display of the filter if the values are not 0
         if (newTotalItems !== 0) {
             updateFilterModal_display(currentFilterData, currentFilterPattern, newTotalItems === 1);
-            //update the table
+            //update the table data
             if (refreshTheTable)
                 onFilterChange(newTotalPages, newTotalItems);
         }
-        else{//0 items in filtered
+        else{//0 items in filtered item
             pageAlert("No items match the filter.");
         }
         enableFilterButton(true);
@@ -188,7 +201,7 @@ const filterValuesHolder = (function () {
     };
 })();
 
-//reset the filter on page refresh
+//reset the filter patterns on page refresh
 window.addEventListener("unload", () => {
     filterValuesHolder.resetFilterModal();
 });
@@ -288,14 +301,16 @@ const filterFormHandler = (function () {
             }
         }
     });
+
     //event listener for clicking the close (X) button on ther modal
     //it already closes the form as set by the HTML and bootstrap
-    //this listener, however, is to set the message of the filter modal to none
+    //this listener, however, is to set the warning messages of the filter modal to none
     //even though it times out by itself after 2 seconds, however, if the user gets a message
-    //and then closes the filter and opens it within < 2, the message is still there, and that's ugly'
+    //and then closes the filter and opens it within < 2, the message is still there, and I cannot abide by that
     filterFormCloseButton.addEventListener("click", () => {
         addFilterMessage.messageDisplayNone();
     });
+
     //reset the form by wiping the filter data in the localStorage
     //and later reloads the page, thus fetching filterData/pattern for all products
     filterFormResetButton.addEventListener("click", () => {
@@ -307,8 +322,7 @@ const filterFormHandler = (function () {
     }
 })();
 
-
-//gets filter data,
+//gets filter data from the DB given a filter pattern,
 //if filterApplied='all' then filter data for all is returned
 //otherwise filter data will be returned for the filtered items
 function getFilterData(filterApplied) {

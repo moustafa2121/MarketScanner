@@ -1,27 +1,32 @@
+#holds and manages models in the DB
+
 from app import db
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy import func, and_, or_
 
+#establishes wishlist between User and Product
+#currently not utilized
 wishlist_table = db.Table(
     'wishlist',
     db.Column('user_id', db.Integer, db.ForeignKey('user_model.sessionID')),
     db.Column('product_id', db.String(400), db.ForeignKey('product.itemLink')),
 )
 
+#the User of the page, mainly for holding wishlists of Product
 class UserModel(db.Model):
     __tablename__ = "user_model"
     id_ = db.Column('sessionID', db.Integer, primary_key = True)
     name = db.Column(db.String(200))
    
-    #Define the many-to-many relationship with Product through the 'wishlist' table
+    #define the many-to-many relationship with Product through the 'wishlist' table
     wishlist = db.relationship('Product', secondary=wishlist_table, back_populates='users')
 
     def __init__(self, name):
         self.name = name
-
     def __str__(self):
         return str(self.id_)
-   
+
+#User related functions
 def getUser(name):
     return UserModel.query.filter_by(name=name).first()
 def userExists(name):
@@ -30,6 +35,7 @@ def addUser(name):
     db.session.add(UserModel(name=name))
     db.session.commit()
 
+#the website of a given Product
 class ItemWebsite(db.Model):
     __tablename__ = 'itemWebsite'
     name = db.Column(db.String(100), primary_key=True)
@@ -66,7 +72,7 @@ def addWebsite(name, baseUrl, icon, numberOfItems, timeStamp, commit=True):
     else:
         return existingWebsite
 
-#define association tables for many-to-many relationships
+#define association tables for many-to-many relationships between Product and its items
 product_brand_association = db.Table('product_brand_association',
     db.Column('product_id', db.String(400), db.ForeignKey('product.itemLink')),
     db.Column('brand_id', db.String(255), db.ForeignKey('brand_item.value'))
@@ -88,6 +94,7 @@ product_vgpg_association = db.Table('product_vgpg_association', db.Model.metadat
     db.Column('vgpg_id', db.String(5), db.ForeignKey('vgpg_item.value'))
 )
 
+#the product (vape juice)
 class Product(db.Model, SerializerMixin):
     __tablename__ = "product"
     itemLink = db.Column(db.String(400), primary_key=True)
@@ -150,6 +157,7 @@ def addProduct(itemLink, name, productImageLink, website, commit=True):
     else:
         return existingProduct
 
+#values describing the Product
 class Brand(db.Model, SerializerMixin):
     __tablename__ = 'brand_item'
     value = db.Column(db.String(255), primary_key=True)
@@ -185,7 +193,7 @@ class Vgpg(db.Model, SerializerMixin):
     def __init__(self, value):
         self.value = value
 
-
+#general function that adds all the items to a given product
 def addItemToProduct(itemValue, product, itemClass, relationshipAttr, commit=True):
     existingItem = itemClass.query.filter_by(value=itemValue).first()
 
@@ -195,18 +203,19 @@ def addItemToProduct(itemValue, product, itemClass, relationshipAttr, commit=Tru
     else:
         newItem = existingItem
 
-    # Associate the item with the product
+    # associate the item with the product
     if newItem not in getattr(product, relationshipAttr):
         getattr(product, relationshipAttr).append(newItem)
-    #getattr(newItem, "products").append(product)
 
     if commit:
         db.session.commit()
 
-
+#serialize a list of Product
 def serializeProducts(productList):
     return [productSerializer(product) for product in productList]
 
+#serializes a products and its items
+#used after querying Products (filtered or not) and sends then async to the frontend
 def productSerializer(item):
     result = item.to_dict(rules=('-website', '-users', '-sizes', '-nics', 
                                  '-vgpgs', '-flavors', '-brands'))
@@ -221,7 +230,8 @@ def productSerializer(item):
     return result
 
 #used for Brand, it takes a list of Brand, counts them and returns
-#a set in which each item is followed by the # of its occurance
+#a Set in which each item is a string followed by the # of its occurances
+#i.e. how many Product does a brand have in the given list
 def listToSetCounter(stringLst):
     stringSet = {}
     for string in stringLst:
@@ -232,15 +242,15 @@ def listToSetCounter(stringLst):
             stringSet[string] = 1
     return {f"{string} ({count})" for string, count in stringSet.items()}
 
-#fetchers
+#fetchers for Product
 def getProducts(start, end):
     return Product.query.limit(end-start).offset(start).all()
 def getAllProducts():
     return Product.query.all()
 
 #given a query of Product objects, returns filter data that are found in these objects
-#and can be applied to filter these objects
-def getItemsFilterList(products):
+#and can be applied to for further filtering of the said objects
+def getFilterData(products):
     brandList, nicSet, sizeSet, vgpgSet, websiteSet = [], set(), set(), set(), set()
     for product in products:
         websiteSet.add(product.website.name)
@@ -249,10 +259,9 @@ def getItemsFilterList(products):
         vgpgSet.update(listIt(product.vgpgs))
         brandList += listIt(product.brands)
     brandSet = listToSetCounter(brandList)
-
     return sorted(list(brandSet)), sorted(list(nicSet)), sorted(list(sizeSet)), sorted(list(vgpgSet)), sorted(list(websiteSet))
 
-#given a properly formatted filter (post being submitted with GET)
+#given a properly formatted filter (after being submitted with GET)
 #this function will return the filtered products.
 def filterProducts(filters, start=0, end=9999):
     query = Product.query
@@ -286,9 +295,9 @@ def filterProducts(filters, start=0, end=9999):
     #as in they do not abide by the limit, this only happens with the min and max filters
     #so we have to get all items and use regular python list slicing which is suboptimal
     #return query.limit(end-start).offset(start).all()
+
     return query.all()[start:end]
 
 
-
-#used to obtain the values of the 5 items when passed by Product
+#used to obtain the values of any of the items when passed by Product
 listIt = lambda item: sorted([i.value for i in item])
