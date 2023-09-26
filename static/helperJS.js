@@ -51,12 +51,48 @@ const enablePagination = (function () {
     }
 })();
 
-const filterHandler = (function () {
-    const filterButton = document.querySelector('#filterSortHolder button');
-    const modal = document.querySelector("#filterSortModal");
-    filterButton.addEventListener("click", () => {
-        //modal.style.display = "inline-block";
+//takes two objects and compares them
+//it returns true if they have matching number of keys, matching keys, and
+//matching values. if one of these values is an object, it will call this function
+//and recurse on the given two objects. No conditions are given regarding the depth
+//of the recursion, so do not give objects with too many objects, depth-wise
+function matchTwoObjects(objA, objB) {
+    const keysA = Object.keys(objA);
+    const keysB = Object.keys(objB);
+
+    //check the keys
+    if (keysA.length !== keysB.length) 
+        return false;
+    for (const key of keysA) 
+        if (!keysB.includes(key)) 
+            return false;
+
+    //check the values
+    for (const key of keysA) {
+        if (typeof (objA[key]) === "object") {
+            if (!matchTwoObjects(objA[key], objB[key]))
+                return false
+        }
+        else if (objA[key] !== objB[key])
+            return false;
+    }
+
+    //if all checks out, return true
+    return true;
+}
+
+//closure that provide a function to show page alerts
+const pageAlert = (() => {
+    const pageAlert = document.getElementById("pageAlert");
+    pageAlert.querySelector("button").addEventListener("click", () => {
+        pageAlert.style.display = "none";
     });
 
-
+    return (messageText, fadeOutDuration=4000) => {
+        pageAlert.querySelector("div").textContent = messageText;
+        pageAlert.style.display = "inline-block";
+        setTimeout(() => {
+            pageAlert.style.display = "none";
+        }, fadeOutDuration);
+    }
 })();

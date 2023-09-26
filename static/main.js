@@ -5,7 +5,7 @@
 //and fetching them if available
 const adjacentTablesHandler = (function () {
     //holds the tableProducts in an array
-    let tableProductsArr = []
+    let tableProductsArr = [];
     return {
         //get the table product if available in the frontend memory
         getTableProduct: (pageNumber) => {
@@ -33,16 +33,20 @@ const adjacentTablesHandler = (function () {
             tableProductsArr = tableProductsArr.filter(item => paginationArray.includes(item.pageNumber));
             //get the items that are only in the paginationArray but 
             //not in intersection, they will be fetched and added
-            for (const page of paginationArray)
+            for (const page of paginationArray) {
+                //console.log("adjacent table: ", page);
                 //if it is not in the intersection, fetch and add
-                if (!intersection.includes(page))
+                if (!intersection.includes(page)) {
+                    //console.log("fetching: ", page);
                     tableProductsArr.push(await getTableData(page));
+                }
+            }
         },
         //a reference to to the tableProductsArr
-        tableProductsArr: () => { return tableProductsArr; },
+        tableProductsArr: () => tableProductsArr,
+        resetTable: () => { tableProductsArr = []; },
     };
 })();
-
 
 //holds a list of Product objects and the page
 //number of the table they belong to
@@ -57,17 +61,17 @@ class TableProducts {
 //holds the product
 class Product {
     constructor(item) {
-        this.itemLink = item.itemLink;
         this.name = item.name;
-        this.productImageLink = item.productImageLink;
-        this.brand = item.brand.length === 0 ? 'No Data' : item.brand;
         this.websiteName = item.websiteName;
+        this.productImageLink = item.productImageLink;
+        this.itemLink = item.itemLink;
+        this.baseUrl = item.baseUrl;
+        this.icon = item.icon;
+        this.brand = (item.brand.length === 0 || item.brand[0].length === 0) ? 'No Data' : item.brand;
         this.flavor = item.flavor.length === 0 ? 'No Data' : item.flavor;
         this.nic = item.nic.length === 0 ? 'No Data' : item.nic;
         this.size = item.size.length === 0 ? 'No Data' : item.size;
         this.vgpg = item.vgpg.length === 0 ? 'No Data' : item.vgpg;
-        this.icon = item.icon;
-        this.baseUrl = item.baseUrl;
     }
 }
 
@@ -75,11 +79,15 @@ class Product {
 //the dispalyTable is set to false on the first page load since we do not want
 //to dispaly the first page since it is already loaded
 //however we want to invoke the adjacentTablesHolder.loadAdjacentTables
-async function loadTheTable(pageNumber, paginationArray, displayTable=true) {
+//resetData is invoked when filter is applied
+async function loadTheTable(pageNumber, paginationArray, displayTable=true, resetData=false) {
     //disable page navigation during fetching and displaying
     enablePagination(false);
 
-    //for most cakes the displayTable is true
+    if (resetData)
+        adjacentTablesHandler.resetTable();
+
+    //for most cases the displayTable is true
     if (displayTable) {
         //try to get tableProduct from the frontend stroage
         let tableProducts = adjacentTablesHandler.getTableProduct(pageNumber)
@@ -87,6 +95,7 @@ async function loadTheTable(pageNumber, paginationArray, displayTable=true) {
         if (!tableProducts)
             tableProducts = await getTableData(pageNumber);
 
+        console.log(tableProducts);
         //display the table
         displayTableRows(tableProducts);
     }
@@ -99,7 +108,10 @@ async function loadTheTable(pageNumber, paginationArray, displayTable=true) {
 
 //given a page number, it will fetch data corresponding to it
 function getTableData(pageNumber) {
-    return fetch(`/moredata/${pageNumber}`, {
+    let filterPattern = filterValuesHolder.currentFilterPattern()
+    if (filterPattern !== "all")
+        filterPattern = filterDataToGetFormat(filterPattern)
+    return fetch(`/moredata/${pageNumber}/${filterPattern}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -179,25 +191,3 @@ function displayCell(passedProduct, currentCell, classListNeg, classListPos) {
         currentCell.className = classListPos;
     }
 }
-
-
-const filterFormHandler = (function () {
-    const filterForm = document.getElementById("filterForm");
-    const filterFormCloseButton = document.querySelector("#filterSortModal button.btn-close");
-
-    filterForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-        console.log("submit");
-
-        const nameInput = filterForm.querySelector('#nameInput').value;
-        const brandInput = filterForm.querySelector('#brandInput').value;
-
-        console.log("Name: " + nameInput);
-        console.log("Brand: " + brandInput);
-
-        //todo: reset values
-        filterFormCloseButton.click();
-    });
-})();
-
-

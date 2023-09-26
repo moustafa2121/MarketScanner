@@ -41,6 +41,12 @@
   <ItemGroup>
     <Content Include="requirements.txt" />
     <Content Include="static\cleanJson_Vape Shop Dubai.json" />
+    <Content Include="static\filterHandler.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="templates\filterForm.html">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="static\helperJS.js">
       <SubType>Code</SubType>
     </Content>

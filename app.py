@@ -7,75 +7,109 @@ import uuid, math, json
 #db reference
 db = SQLAlchemy()
 
+itemsPerPage = 15
 
 #creates the app and its routes
 def create_app():
+    #app/db initialization
     app = Flask(__name__)
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vapeDB9.sqlite3'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///vapeDB1.sqlite3'
     db.init_app(app)#instead of: db = SQLAlchemy(app)
-    
-    itemsPerPage = 15
         
-    def dataRangerFinder(pageNumber):
-        return (pageNumber-1) * itemsPerPage, pageNumber * itemsPerPage
-
+    #home page
+    #this view mainly displays the data in the table of the 1st page
+    #other pages and filter data are taken care of by other views
     @app.route('/', methods=['GET'])
     def homePage():
         import models
         
-        #get the data
+        #get the data range
         dataRangeStart, dataRangeEnd = dataRangerFinder(1)
-        
-        totalItems = models.getProductsCount()
-
-        data = models.getProducts(dataRangeStart, dataRangeEnd)
+        #get all products (to know page number and number of items)
+        allProducts = models.getAllProducts()
+        totalItems = len(allProducts)
         totalPages = math.ceil(totalItems/itemsPerPage)
+
+        #data to be sent
+        dataInRange = models.getProducts(dataRangeStart, dataRangeEnd)
         constantsValues = {'noDataVariable':'No Data',
                            "itemsPerPage":itemsPerPage,
                            "totalPages":totalPages,
                            "totalItems":totalItems,}
-        filterValues = {"brandList":models.getBrandList(models.getAllProducts()),}
 
-        response = make_response(render_template("index.html", lst=data,
-                                                 filterValues=filterValues,
+        #construct a response
+        response = make_response(render_template("index.html",
+                                                lst=dataInRange,
                                                 constantsValues=constantsValues))
         
         #check cookie, if needed it will attach to the response
+        #usually for first time visitors
         attachCookie(response)
 
         return response
 
+    #todo: if invalid redirect to homepage
     #todo: prevent users from calling it directly, only for fetchAPI
-    @app.route('/moredata/<pageNumber>', methods=['GET'])
-    def getMoreItems(pageNumber):
+    #fetches the data to be populated in the filter
+    #basically, given a filter pattern, it returns the narrowed down
+    #filter values. if the pattern is "all", sends all the filter data
+    @app.route('/filterfetcher/<values>', methods=['GET'])
+    def filterFetcher(values):
+        import models
+        print("filter fetcher, pattern:", values)
+        if values != "all":
+            filters = cleanFilterPattern(values)
+            allProducts = models.filterProducts(filters)
+        else:
+            allProducts = models.getAllProducts()
+        brandList, nicList, sizeList, vgpgList, websiteList = models.getItemsFilterList(allProducts)
+        filterValues = {"brandList":brandList,
+                        "nicList":nicList,
+                        "sizeList":sizeList,
+                        "vgpgList":vgpgList,
+                        "websiteList":websiteList}
+
+        totalPages = math.ceil(len(allProducts)/itemsPerPage)
+
+        return json.dumps({"filterValues": filterValues,
+                           "totalPages":totalPages,
+                           "totalItems":len(allProducts)})
+
+    #todo: prevent users from calling it directly, only for fetchAPI
+    #todo: if invalid redirect to homepage
+    #called on in the background from the front end
+    #it fetches pages to be loaded dynmically in the frontend
+    #returns a json with the data equalling [itemsPerPage] items
+    @app.route('/moredata/<pageNumber>/<values>', methods=['GET'])
+    def getMoreItems(pageNumber, values):
         import models
         dataRangeStart, dataRangeEnd = dataRangerFinder(int(pageNumber))
-        products = models.getProducts(dataRangeStart, dataRangeEnd)
+        if values == "all":
+            products = models.getProducts(dataRangeStart, dataRangeEnd)
+        else:
+            filterDict = cleanFilterPattern(values)
+            products = models.filterProducts(filterDict, dataRangeStart, dataRangeEnd)
         
-        #serialize
-        resultsList = []
-        for product in products:
-            resultsList.append(models.productSerializer(product))
-        return json.dumps({"returnValue": resultsList})
+        #serialize and return
+        return json.dumps({"returnValue": models.serializeProducts(products)})
         
-        #if invalid redirect to homepage
-
   
     #make a request to populate the DB with a website
     @app.route('/filldb', methods=['GET'])
     def website():
         import models
         #1: get the json from the scraper/microservice
-        metaValues, itemList = dbExtract.openJson('static/cleanJson_Vape Shop Dubai.json')
+        #metaValues, itemList = dbExtract.openJson('static/cleanJson_Vape Shop Dubai.json')
         
         #products = models.Product.query.all()
         #for product in products:
         #    db.session.delete(product)
         #db.session.commit()
         #print(models.Product.query.all())
+
         #websiteObject = models.ItemWebsite.query.all()
         #for obj in websiteObject:
-        #    db.session.delete(obj)
+            #db.session.delete(obj)
         #db.session.commit()
         #print(models.ItemWebsite.query.all())
 
@@ -94,15 +128,31 @@ def create_app():
         #    productTmp = models.addProduct(item['itemLink'],
         #                    item['name'],
         #                    item['productImageLink'],
-        #                    item['brand'],
         #                    websiteObject,
         #                    commit)
             
-        #    [models.addProductItem_string(flav, models.ProductItemType.flavor, productTmp, commit) for flav in item['flavor']]
-        #    [models.addProductItem_integer(nic, models.ProductItemType.nic, productTmp, commit) for nic in item['nic']]
-        #    [models.addProductItem_integer(size, models.ProductItemType.size, productTmp, commit) for size in item['size']]
-        #    [models.addProductItem_string(str(vgpg), models.ProductItemType.vgpg, productTmp, commit) for vgpg in item['vgpg']]
-                   
+        #    models.addItemToProduct(item['brand'], productTmp, models.Brand, "brands", commit)
+        #    [models.addItemToProduct(flav, productTmp, models.Flavor, "flavors", commit) for flav in item['flavor']]
+        #    [models.addItemToProduct(nic, productTmp, models.Nic, "nics", commit) for nic in item['nic']]
+        #    [models.addItemToProduct(size, productTmp, models.Size, "sizes", commit) for size in item['size']]
+        #    [models.addItemToProduct(str(vgpg), productTmp, models.Vgpg, "vgpgs", commit) for vgpg in item['vgpg']]
+        
+        #print(models.Size.query.all())
+        #print(models.Size.query.all()[0].value)
+        #print(type(models.Size.query.all()[0].value))
+        #productsWithSize10 = models.Product.query.join(models.Product.sizes).filter(models.Size.value == 30).all()
+        #print(productsWithSize10[0])
+        #print(len(productsWithSize10))
+
+        #filters = {"nicMin": "5",
+        #           "nicMax":"20"}
+
+        #lst = models.filterProducts(filters)
+        ##print(lst)
+        ##print(lst)
+        #[print(i.nics) for i in lst]
+        #print(lst[0].brands)
+
         return "olo"
     
 
@@ -112,14 +162,39 @@ def create_app():
     return app
 
 
+#pre-processor for filtering data 
+#takes the filters sent from the frontend in a GET request
+#cleans them up and returns a dict that be used to fetch the
+#products that matches the filter
+def cleanFilterPattern(values):
+    import urllib.parse
+    values = values.replace(";", "/")
+    values = values.split("&")
+    filterDict = {}
+    for value in values:
+        value = urllib.parse.unquote(value)
+        field, value = value.split("=")
+        value = value.replace("*", "&")
+        if field == "vgpgInput":
+            filterDict[field] = value.split(",")
+        elif field == "brandInput":
+            filterDict[field] = value.split(",")
+            filterDict["brandInput"] = list(map(lambda x:x.rsplit(" (", 1)[0], filterDict["brandInput"]))
+        else:
+            filterDict[field] = value
+    return filterDict
 
+#given page number, it will return start and end item for the DB queries
+def dataRangerFinder(pageNumber):
+    return (pageNumber-1) * itemsPerPage, pageNumber * itemsPerPage
+
+#attaches a cookie (if needed) to the given response
 def attachCookie(response):
+    import models
     user_id = request.cookies.get('user_id')
     if not user_id:
         user_id = str(uuid.uuid4())
         response.set_cookie('user_id', user_id, max_age=360000000)
-
-    import models
     if not models.userExists(user_id):
         models.addUser(user_id)
 

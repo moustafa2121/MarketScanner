@@ -4,13 +4,13 @@
 <section id="tableFilterSection">
     <div id="filterSortHolder">
         <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#filterSortModal">
-            Filters
+            <span>Filters (0)</span>
             <svg style="margin-left:3px;" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-sliders" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3h9.05zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8h2.05zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1h9.05z" />
             </svg>
         </button>
-        
-
+        <div id="filterSortBadges">
+        </div>
     </div>
     <span id="resultsElement">
         {{ constantsValues.totalItems }} item{{ 's' if constantsValues.totalItems != 1 else '' }} found
@@ -50,22 +50,24 @@
 
                     <!-- name -->
                     <td class="nameColumn">
-                        <a target="_blank" href="{{item.getWebUrl()}}"><img class="webIcon" src="{{item.getWebIcon()}}"/></a>
+                        <a target="_blank" href="{{item.getWebUrl()}}"><img class="webIcon" src="{{item.getWebIcon()}}" /></a>
                         <a href="{{item.itemLink}}" class="link-dark" target="_blank">{{item.name}}</a>
                     </td>
 
                     <!-- brand -->
-                    {% if item.brand|length > 0 %}
-                    <td class="brandColumn">{{item.brand}}</td>
+                    {% if  item.brands.0.value == "" %}
+                    <td class="brandColumn emptyCell">{{constantsValues.noDataVariable}}</td>
+                    {% elif item.brands|length > 0 %}
+                    <td class="brandColumn">{{item.brands.0.value}}</td>
                     {% else %}
                     <td class="brandColumn emptyCell">{{constantsValues.noDataVariable}}</td>
                     {% endif %}
 
                     <!-- flavor -->
-                    {% if item.getFlavors()|length > 0 %}
+                    {% if item.flavors|length > 0 %}
                     <td class="flavorColumn">
-                        {% for flav in item.getFlavors()%}
-                        {{ flav }}{% if not loop.last %},{% endif %}
+                        {% for flav in item.flavors %}
+                        {{ flav.value }}{% if not loop.last %},{% endif %}
                         {% endfor %}
                     </td>
                     {% else %}
@@ -73,10 +75,10 @@
                     {% endif %}
 
                     <!-- nicotine level -->
-                    {% if item.getNics()|length > 0 %}
+                    {% if item.nics|length > 0 %}
                     <td class="nicColumn centerText">
-                        {% for nicLvl in item.getNics() %}
-                        {{ nicLvl }}{% if not loop.last %},{% endif %}
+                        {% for nicLvl in item.nics|sort(attribute="value") %}
+                        {{ nicLvl.value }}{% if not loop.last %},{% endif %}
                         {% endfor %}
                     </td>
                     {% else %}
@@ -84,10 +86,10 @@
                     {% endif %}
 
                     <!-- bottle size -->
-                    {% if item.getSizes()|length > 0 %}
+                    {% if item.sizes|length > 0 %}
                     <td class="sizeColumn centerText">
-                        {% for size in item.getSizes() %}
-                        {{ size }}{% if not loop.last %},{% endif %}
+                        {% for size in item.sizes|sort(attribute="value") %}
+                        {{ size.value }}{% if not loop.last %},{% endif %}
                         {% endfor %}
                     </td>
                     {% else %}
@@ -95,9 +97,9 @@
                     {% endif %}
 
                     <!-- VG/PG -->
-                    {% if item.getVgpgs()|length > 0 %}
-                    {% for vgpg in item.getVgpgs() %}
-                    <td class="vgpgColumn centerText">{{vgpg}}</td>
+                    {% if item.vgpgs|length > 0 %}
+                    {% for vgpg in item.vgpgs %}
+                    <td class="vgpgColumn centerText">{{vgpg.value}}</td>
                     {% endfor %}
                     {% else %}
                     <td class="vgpgColumn emptyCell centerText">{{constantsValues.noDataVariable}}</td>
