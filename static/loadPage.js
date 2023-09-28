@@ -110,8 +110,10 @@ function setThePagination(pageNumber, paginationArray) {
             setPageButtonEventListener(liEleA);
 
         //if the current value is the current page then set it to .active
-        if (page == pageNumber)
-            liEleA.classList.add('active')
+        //the reason i'm using timeout is because the .active class
+        //transition effect does not work without for some reason
+        if (page == pageNumber) 
+            setTimeout(() => { liEleA.classList.add('active'); },0)
     }
 
     //disable/enable the prevPage/nextPage buttons depending 

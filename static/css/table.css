@@ -112,7 +112,7 @@ tbody td {
     transition: 0.3s;
 }
 .imgColumn img:hover {
-    opacity: 0.7;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 /* modal that displays and zooms the iamge when the image

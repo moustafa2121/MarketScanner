@@ -69,7 +69,6 @@ main {
 /* holds the pagination */
 #paginationHolder {
     width:100%;
-    /*border: 1px solid black;*/
 }
 #paginationHolder > ul {
     width:100%;
@@ -79,11 +78,13 @@ main {
     margin: 0;
     padding:0;
     list-style: none;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
+    
 /* the list of pages (exluding the next/prev) */
-#paginationHolder > ul > li:has(ul){
-    width:100%;
-    max-width:100%;
+#paginationHolder > ul > li:has(ul) {
+    width: 100%;
+    max-width: 100%;
     min-width: 0;
 }
 #paginationHolder > ul > li > ul{
@@ -105,13 +106,15 @@ main {
     float: left;
     padding: 8px 16px;
     text-decoration: none;
-    transition: background-color .3s;
-    cursor:pointer;
+    cursor: pointer;
+    background-color: inherit;
+    transition: background-color 0.3s;
 }
-#innerPagesHolder .active {
+
+.paginationList a.active {
     background-color: dimgray;
     color: white;
-    pointer-events:none;
+    pointer-events: none;
 }
 .paginationList a:hover:not(.active) {
     background-color: #ddd;
