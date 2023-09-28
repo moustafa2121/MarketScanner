@@ -2,66 +2,62 @@
 
 /* the table holder*/
 #tableContainerSection {
-    height: 100%;
+    height: 70vh;
+    width: 80vw;
     margin: 0 10vw 0 10vw;
     position: relative;
 }
 /* contains the table to create the scroll effect */
 #tableContainerDiv {
     height: 100%;
+    width: 100%;
     margin: 0;
-    overflow: auto;
-}
-/* scroll bar styling*/
-::-webkit-scrollbar {
-    width: 12px;
-}
-::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    border-radius: 0;
-}
-::-webkit-scrollbar-thumb {
-    border-radius: 0px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+    overflow-y: auto;
 }
 
 /* the table */
 table {
-    font-family: 'Roboto', sans-serif;
-    border-collapse: collapse;
     height: 100%;
     width: 100%;
+    font-family: 'Roboto', sans-serif;
+    border-collapse: collapse;
+    border-spacing:0;
 }
 
-/* hides/displays rows if the table is not full */
-.hiddenRow {
-    display: none;
-}
-.visibleRow {
-    display: table-row;
-}
-
-
-
-/* the holder for each header. makes it absolute
-    and above the scroll bar */
-thead > tr > th > span {
-    position: absolute;
-    top: -34px;
-    z-index: 2;
-    height: 36px;
-    display: inline-block;
+/* row for the headers. place them above the table 
+    to enable the scrolling of the table
+*/
+thead > tr {
+    width: 100%;
+    height: 3vh;
+    position: sticky;
+    max-width: 100%;
+    padding: 0;
+    margin: 0;
+    top: -0.01vh;
     background-color: #5C7DFD !important;
-    padding-top: 7px;
-    text-align: center;
-    align-content: center;
 }
+thead > tr > th {
+    padding:0;
+    margin:0;
+    position:sticky;
+    text-align:center;
+    border: 1px solid #ddd;
+}
+/* container for the text in each <th> */
+thead > tr > th > span {
+    position:static;
+    font-size:0.9vmax;
+    z-index: 2;
+    display: inline-block;
+}
+
 /* class for each column: sets the width*/
 .imgColumn {
-    width: 5%;
+    width: 5% !important;
 }
 .nameColumn {
-    width: 40%;
+    width: 40% !important;
 }
 .nameColumn a {
     text-underline-offset: 0.1em;
@@ -81,40 +77,30 @@ thead > tr > th > span {
 .vgpgColumn {
     width: 8%;
 }
-
 .webIcon {
     width: 28px;
     height: 28px;
     margin-right: 7px;
 }
 
-/* for each cell of the table*/
-td {
-    height: 70px;
+/* row of the table*/
+tbody tr {
+    width:100%;
+    max-width:100%;
+    height: 10vh;
+    max-height: 10vh;
+}
+
+/* cell of the table*/
+tbody td {
+    height: 100%;
     border: 1px solid #ddd;
     padding: 8px;
+
+    max-width: 1px !important; /*enforces the overflow of text*/
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    max-width: 1px !important; /*enforces the overflow of text*/
-}
-
-/* styling */
-table tr:nth-child(odd) {
-    background-color: #f2f2f2;
-}
-.centerText {
-    text-align: center;
-}
-.leftAlign {
-    text-align: left;
-}
-table tr:hover {
-    background-color: #ddd;
-}
-.emptyCell {
-    color: gray;
-    cursor: default;
 }
 
 /* image of each row */
@@ -195,8 +181,57 @@ table tr:hover {
 }
 
 /* 100% Image Width on Smaller Screens */
-@media only screen and (max-width: 700px) {
+/*@media only screen and (max-width: 700px) {
     #imgModalContent {
         width: 100%;
     }
+}*/
+
+
+/* hides/displays rows if the table is not full */
+.hiddenRow {
+    display: none;
+}
+
+.visibleRow {
+    display: table-row;
+}
+
+/* styling */
+table tr:nth-child(odd) {
+    background-color: #f2f2f2;
+}
+
+.centerText {
+    text-align: center;
+}
+
+.leftAlign {
+    text-align: left;
+}
+
+table tr:hover {
+    background-color: #ddd;
+}
+
+.emptyCell {
+    color: gray;
+    cursor: default;
+}
+
+/* scrollbar */
+::-webkit-scrollbar {
+    width: 1px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }

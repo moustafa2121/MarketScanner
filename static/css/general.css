@@ -1,46 +1,47 @@
-html, body{
+body{
     height:100vh;
     width:100vw;
 }
 
-/* top navigation bar */
+/* title display */
 header {
     height: 20vh;
-    width: 100vw;
-    max-height: 20vh !important;
-    padding:0 !important;
+    width: 100%;
+    padding: 0 !important;
 }
 .titleContainer {
+    height: 85%;
     width: 100%;
     background-color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 #navBarTitle {
-    max-height: 20vh !important;
-    font-size: 10vh;
+    display:inline-block;
+    font-size: 12vmin;
     color: #FDDC5C;
     text-transform: uppercase;
     font-family: 'Gambetta', serif;
     transition: 700ms ease;
-    padding: 10px 0 0 0;
     outline: none;
-    text-align: center;
 }
 
 /* main */
 main {
-    height: 69%;
+    height: 80vh; /* the height of the table + tableFilterSection */
     box-sizing: border-box;
     position: relative;
-    margin-top: 5px;
 }
 
 /* the filter and pagination holder for the table */
 #tableFilterSection {
-    padding: 0;
-    height: 5vh;
-    margin: 0 10vw 5vh 10vw;
+    height: 10vh;
+    padding: 0 0 4vh 0; /* padding bottom to push up, since the header is overlapping it */
+    max-height: 10vh;
+    margin: 0 10vw 0 10vw;
     display: grid;
-    grid-template-columns: 65% 10% 25%;
+    grid-template-columns: 55% 10% 35%;
 }
 
 /* for disabled buttons */
@@ -61,7 +62,7 @@ main {
 #resultsElement {
     display: inline-block;
     margin-top: 7px;
-    border: 1px solid black;
+    /*border: 1px solid black;*/
 }
 
 /* holds the pagination */
@@ -137,24 +138,24 @@ footer > button{
     max-width: 70vw;
 }
 
-    #pageAlert > div {
-        display: inline-block;
-        position: relative !important;
-        padding: 13px 0px 13px 13px;
-        max-width: 90%;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
+#pageAlert > div {
+    display: inline-block;
+    position: relative !important;
+    padding: 13px 0px 13px 13px;
+    max-width: 90%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 
-    #pageAlert > button {
-        display: inline-block;
-        position: relative !important;
-        top: -16px;
-        margin-left: 20px;
-        padding: 13px 20px 13px 0px;
-        bottom: 15px;
-    }
+#pageAlert > button {
+    display: inline-block;
+    position: relative !important;
+    top: -16px;
+    margin-left: 20px;
+    padding: 13px 20px 13px 0px;
+    bottom: 15px;
+}
 
 /* age verification modal */
 #ageVerificationModal .modal-content {

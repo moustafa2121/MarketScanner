@@ -30,14 +30,14 @@
     <div id="tableContainerDiv">
         <table class="table-hover align-middle">
             <thead>
-                <tr class="leftAlign">
-                    <th><span class="imgColumn">Image</span></th>
-                    <th><span class="nameColumn">Name</span></th>
-                    <th><span class="brandColumn">Brand</span></th>
-                    <th><span class="flavorColumn">Flavor</span></th>
-                    <th><span class="nicColumn">Nicotine (mg)</span></th>
-                    <th><span class="sizeColumn">Bottle (ml)</span></th>
-                    <th><span class="vgpgColumn">VG/PG</span></th>
+                <tr>
+                    <th class="imgColumn"><span>Image</span></th>
+                    <th class="nameColumn"><span>Name</span></th>
+                    <th class="brandColumn"><span>Brand</span></th>
+                    <th class="flavorColumn"><span>Flavor</span></th>
+                    <th class="nicColumn"><span>Nic (mg)</span></th>
+                    <th class="sizeColumn"><span>Size (ml)</span></th>
+                    <th class="vgpgColumn"><span>VG/PG</span></th>
                 </tr>
             </thead>
             <tbody>
@@ -45,7 +45,7 @@
                 <tr>
                     <!-- image -->
                     <td class="imgColumn centerText">
-                        <img class="img-thumbnail" src="{{item.productImageLink}}">
+                        <img class="img-fluid img-thumbnail" alt="..." src="{{item.productImageLink}}">
                     </td>
 
                     <!-- name -->
