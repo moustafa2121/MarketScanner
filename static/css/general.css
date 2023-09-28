@@ -1,16 +1,17 @@
-body{
-    height:100vh;
-    width:100vw;
+body {
+    height: 100vh;
+    width: 100vw;
 }
 
 /* title display */
 header {
     height: 20vh;
     width: 100%;
-    padding: 0 !important;
+    margin: 0 0 20px 0;
+    padding: 0;
 }
 .titleContainer {
-    height: 85%;
+    height: 100%;
     width: 100%;
     background-color: black;
     display: flex;
@@ -37,11 +38,12 @@ main {
 /* the filter and pagination holder for the table */
 #tableFilterSection {
     height: 10vh;
+    max-height: 10vh;
     padding: 0 0 4vh 0; /* padding bottom to push up, since the header is overlapping it */
     max-height: 10vh;
     margin: 0 10vw 0 10vw;
     display: grid;
-    grid-template-columns: 55% 10% 35%;
+    grid-template-columns: 65% 15% 20%;
 }
 
 /* for disabled buttons */
@@ -62,18 +64,42 @@ main {
 #resultsElement {
     display: inline-block;
     margin-top: 7px;
-    /*border: 1px solid black;*/
 }
 
 /* holds the pagination */
 #paginationHolder {
-    display: inline-block;
-    border: 1px solid black;
+    width:100%;
+    /*border: 1px solid black;*/
 }
-#paginationHolder ul {
+#paginationHolder > ul {
+    width:100%;
+    display: inline-grid;
+    grid-template-columns: 11.11% 77.77% 11.11%;
+
     margin: 0;
+    padding:0;
     list-style: none;
 }
+/* the list of pages (exluding the next/prev) */
+#paginationHolder > ul > li:has(ul){
+    width:100%;
+    max-width:100%;
+    min-width: 0;
+}
+#paginationHolder > ul > li > ul{
+    width:100%;
+    max-width:100%;
+
+    list-style-type: none;
+    display:flex;
+    padding:0;
+}
+#paginationHolder > ul > li > ul >li{
+    float:left;
+    flex-grow:4;
+    width:14.2%;
+}
+
 .paginationList a {
     color: black;
     float: left;

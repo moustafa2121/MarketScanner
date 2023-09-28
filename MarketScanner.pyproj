@@ -44,6 +44,9 @@
     <Content Include="static\css\filterModal.css">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="static\css\mediaQueries.css">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="static\css\table.css">
       <SubType>Code</SubType>
     </Content>

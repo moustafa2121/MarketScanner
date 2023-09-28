@@ -1,0 +1,117 @@
+@media only screen and (max-width: 2000px) {
+    #tableFilterSection {
+        grid-template-columns: 60% 15% 25%;
+    }
+}
+
+@media only screen and (max-width: 1600px) {
+    #tableContainerSection {
+        width: 90vw;
+        margin: 0 5vw 0 5vw;
+    }
+    #tableFilterSection {
+        grid-template-columns: 55% 15% 30%;
+        width: 90vw;
+        margin: 0 5vw 0 5vw;
+    }
+}
+@media only screen and (max-width: 1350px) {
+    .vgpgColumn {
+        display:none;
+    }
+}
+
+@media only screen and (max-width: 1200px) {
+    #tableFilterSection {
+        grid-template-columns: 45% 20% 35%;
+    }
+    .imgColumn{
+        width: 8% !important;
+    }
+    .nameColumn {
+        width: 35% !important;
+    }
+    .brandColumn {
+        width: 15%;
+    }
+    .flavorColumn {
+        width: 18.75%;
+    }
+    .nicColumn {
+        width: 12%;
+    }
+    .sizeColumn {
+        width: 10%;
+    }
+    #filterSortHolder > button {
+        margin-left: 2px;
+        font-size: 1.0em;
+        padding: 4px;
+    }
+}
+@media only screen and (max-width: 900px) {
+    header {
+        margin: 0 0 4px 0 !important;
+    }
+   
+    #tableFilterSection {
+        grid-template-columns: 35% 20% 45%;
+        height: 7vh;
+        padding: 0 0 10vh 0; /* padding bottom to push up, since the header is overlapping it */
+    }
+
+    .brandColumn, .sizeColumn {
+        display: none;
+    }
+}
+@media only screen and (max-width: 750px) {
+    #tableFilterSection {
+        grid-template-columns: 20% 25% 55%;
+    }
+    
+
+}
+@media only screen and (max-width: 650px) {
+    #tableFilterSection {
+        grid-template-columns: 30% 70%;
+    }
+    #resultsElement {
+        display:none;
+    }
+    #filterSortHolder > button {
+        font-size: 0.6em;
+        padding:2px;
+        margin-bottom:4px;
+    }
+    .nicColumn {
+        display: none;
+    }
+    #tableFilterSection li a {
+        padding: 2px 6px 2px 6px;
+        font-size:0.8em;
+    }
+}
+
+@media only screen and (max-width: 465px) {
+    #tableFilterSection {
+        grid-template-columns: 10% 90%;
+        height: 3vh;
+        padding: 0 0 12vh 0; 
+    }
+    .flavorColumn {
+        display: none;
+    }
+    #filterSortHolder > button {
+        padding-left: 0px !important;
+        margin-left: 0px;
+    }
+    #filterSortHolder > button > span {
+        display: none;
+    }
+
+}
+    /* 100% Image Width on Smaller Screens */
+@media only screen and (max-width: 700px) {
+    #imgModalContent {
+    }
+}

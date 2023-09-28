@@ -34,7 +34,7 @@ thead > tr {
     max-width: 100%;
     padding: 0;
     margin: 0;
-    top: -0.01vh;
+    top: -0.05vh;
     background-color: #5C7DFD !important;
 }
 thead > tr > th {
@@ -47,7 +47,7 @@ thead > tr > th {
 /* container for the text in each <th> */
 thead > tr > th > span {
     position:static;
-    font-size:0.9vmax;
+    font-size:1em;
     z-index: 2;
     display: inline-block;
 }
@@ -87,8 +87,8 @@ thead > tr > th > span {
 tbody tr {
     width:100%;
     max-width:100%;
-    height: 10vh;
-    max-height: 10vh;
+    height: 5vh;
+    max-height: 5vh;
 }
 
 /* cell of the table*/
@@ -179,14 +179,6 @@ tbody td {
     text-decoration: none;
     cursor: pointer;
 }
-
-/* 100% Image Width on Smaller Screens */
-/*@media only screen and (max-width: 700px) {
-    #imgModalContent {
-        width: 100%;
-    }
-}*/
-
 
 /* hides/displays rows if the table is not full */
 .hiddenRow {
