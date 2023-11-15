@@ -51,6 +51,7 @@ def create_app():
         return response
 
     #todo: if invalid redirect to homepage
+    #todo: if no data vailable?
     #todo: prevent users from calling it directly, only for fetchAPI
     #fetches the data to be populated in the filter modal
     #Given a filter pattern, it returns the narrowed down

@@ -28,7 +28,7 @@ paginationManager = (function () {
 })();
 
 //called when filter is applied and the table has to be refreshed
-//it takes the total pages of the now filter items, and total items
+//it takes the total pages of the now filtered items, and total items
 //as such it will invoke the refresh table, thus creating new paginationArray
 //and re-displaying all the data
 //also resets the data held in storage for the adjacent tables
@@ -86,24 +86,25 @@ function refreshTable(pageNumber, totalPages, displayTable = true, resetData = f
 //nextPage/prevPage buttons are clicked
 //it updates the pagination based on the new current page
 function setThePagination(pageNumber, paginationArray) {
-    //the parent of the pages buttons
-    const ulPagination = document.getElementById("innerPagesHolder");
-    //remove all previous page buttons
-    while (ulPagination.firstChild)
-        ulPagination.removeChild(ulPagination.lastChild);
+    const ulNextP = document.getElementById("nextPage").parentElement;
+    const prevPage = document.getElementById("prevPage").parentElement;
+
+    //remove the pages buttons, except for tne next and prev pages buttons
+    while (prevPage.nextElementSibling.firstChild.id !== "nextPage") 
+        prevPage.nextElementSibling.remove();
 
     //loop over the new page buttons values
     for (page of paginationArray) {
         //new li and a elements
         const liEle = document.createElement("li");
         liEle.classList.add("pageItem");
-        ulPagination.appendChild(liEle);
+        ulNextP.parentElement.insertBefore(liEle, ulNextP);
         const liEleA = document.createElement("a");
         liEle.appendChild(liEleA);
 
         //set the value
         liEleA.textContent = page;
-        //if the elment is the default value (i.e. ...) then disable it
+        //if the element is the default value (i.e. ...) then disable it
         if (page === paginationManager.placeHolderValue)
             liEleA.classList.add('disabled')
         else//else give it an event listener
@@ -111,7 +112,7 @@ function setThePagination(pageNumber, paginationArray) {
 
         //if the current value is the current page then set it to .active
         //the reason i'm using timeout is because the .active class
-        //transition effect does not work without for some reason
+        //transition effect does not work without it for some reason
         if (page == pageNumber) 
             setTimeout(() => { liEleA.classList.add('active'); },0)
     }
@@ -182,9 +183,9 @@ function disableOnValue(element, value) {
 //toggle disable for prevPage/nextPage 
 function toggleDisabled(element, disable) {
     if (!element.classList.contains("disabled") && disable)
-        element.classList.add("disabled")
+        element.classList.add("disabled");
     else if (element.classList.contains("disabled") && !disable)
-        element.classList.remove("disabled")
+        element.className = "";
 }
 
 

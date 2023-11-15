@@ -1,9 +1,10 @@
 body {
     height: 100vh;
     width: 100vw;
+    max-width: 100%;
 }
 
-/* title display */
+/* title bar display */
 header {
     height: 20vh;
     width: 100%;
@@ -19,7 +20,7 @@ header {
     justify-content: center;
 }
 #navBarTitle {
-    display:inline-block;
+    display: inline-block;
     font-size: 12vmin;
     color: #FDDC5C;
     text-transform: uppercase;
@@ -40,17 +41,10 @@ main {
     height: 10vh;
     max-height: 10vh;
     padding: 0 0 4vh 0; /* padding bottom to push up, since the header is overlapping it */
-    max-height: 10vh;
     margin: 0 10vw 0 10vw;
     display: grid;
-    grid-template-columns: 65% 15% 20%;
-}
-
-/* for disabled buttons */
-.disabled {
-    cursor: default !important;
-    pointer-events: none;
-    color: gray;
+    grid-template-columns: 20% 80%;
+    /*border: 1px solid black;*/
 }
 
 /* the filter button*/
@@ -60,64 +54,71 @@ main {
     font-size:1.3em;
 }
 
-/* displays how many items were fetched*/
-#resultsElement {
-    display: inline-block;
-    margin-top: 7px;
-}
-
 /* holds the pagination */
 #paginationHolder {
-    width:100%;
+    display:inline-flex;
+    flex-direction:column;
+    text-align:right;
+    justify-content:end;
 }
-#paginationHolder > ul {
-    width:100%;
-    display: inline-grid;
-    grid-template-columns: 11.11% 77.77% 11.11%;
 
+/* displays how many items were fetched*/
+#resultsElement {
+    margin-top: 7px;
+    padding-right:30px;
+}
+#paginationHolder > div{
+    display:flex;
+    flex-direction:row;
+    justify-content:end;
+    height:40px;
+}
+#paginationHolder ul {
     margin: 0;
-    padding:0;
+    padding: 0;
     list-style: none;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: row;
+    align-content:center;
 }
-    
-/* the list of pages (exluding the next/prev) */
-#paginationHolder > ul > li:has(ul) {
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-}
-#paginationHolder > ul > li > ul{
-    width:100%;
-    max-width:100%;
-
-    list-style-type: none;
-    display:flex;
-    padding:0;
-}
-#paginationHolder > ul > li > ul >li{
-    float:left;
-    flex-grow:4;
-    width:14.2%;
-}
-
-.paginationList a {
-    color: black;
-    float: left;
+/* page button */
+#paginationHolder li {
+    display: inline-block;
     padding: 8px 16px;
-    text-decoration: none;
+    color: black;
     cursor: pointer;
     background-color: inherit;
     transition: background-color 0.3s;
 }
+#paginationHolder li a{
+    color: black;
+    text-decoration: none;
+}
+#paginationHolder li:hover {
+    background-color: #ddd;
+}
 
-.paginationList a.active {
+/* active page button */
+#paginationHolder li:has(a.active), #paginationHolder li > a.active {
     background-color: dimgray;
     color: white;
+    cursor: default;
+    pointer-events: none;
+    text-decoration: none;
+}
+
+/* for disabled buttons */
+#paginationHolder li:has(a.disabled) {
+    cursor:default !important;
+    background-color: inherit !important;
     pointer-events: none;
 }
-.paginationList a:hover:not(.active) {
-    background-color: #ddd;
+.disabled {
+    cursor: default !important;
+    pointer-events: none;
+    color: gray !important;
+    text-decoration: none;
 }
 
 /* footer */

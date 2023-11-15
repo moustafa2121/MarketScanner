@@ -7,14 +7,14 @@
 
 //holds the tables that are adjacent to the current table
 //this is to ensure that the pages that are visible to the
-//user can be loaded quickly since they are saved locally
+//user can be loaded quickly since they are stored in the frontend
 //handles loading the adjacent tables, storing them, removing them,
 //and fetching them if available
 const adjacentTablesHandler = (function () {
     //holds the tableProducts in an array
     let tableProductsArr = [];
     return {
-        //get the table product if already saved in the array
+        //get the table of products if already saved in the array
         getTableProduct: (pageNumber) => {
             for (const tableProduct of tableProductsArr)
                 if (tableProduct.pageNumber == pageNumber)
@@ -22,11 +22,11 @@ const adjacentTablesHandler = (function () {
             return null;
         },
         //used everytime (almost) the user navigates to a new page
-        //adds/removes the adjacent table as needed and stores them
+        //adds/removes the adjacent table as needed and stores them in tableProductsArr
         loadAdjacentTables: async (paginationArray) => {
             //trim the pagination array to remove the dots (placeholder)
             //this array determines what tables to fetch as it represents
-            //the pages button visible in the pagination buttons for the user to navigate
+            //the pages button visible in the pagination bar for the user to navigate
             paginationArray = paginationArray.filter(item => item !== '...')
 
             //the intersection between the pagination array and the
@@ -86,7 +86,7 @@ class Product {
 
 //displays the data of a given page number, usually invoked by pagination events/filtering
 //the dispalyTable is set to false on the first page load since we do not want
-//to dispaly the first page since it is already loaded
+//to dispaly the first page since it is already displayed
 //however we want to invoke the adjacentTablesHolder.loadAdjacentTables function
 //resetData is usually invoked when filter is applied
 async function loadTheTable(pageNumber, paginationArray, displayTable=true, resetData=false) {
