@@ -12,15 +12,15 @@
         </button>
     </div>    
     <div id="paginationHolder">
-        <div>
-            <ul class="paginationList">
-                <li class="pageItem"><a id="prevPage">&lt;</a></li>
-                <li class="pageItem"><a id="nextPage">&gt;</a></li>
-            </ul>
-        </div>
         <span id="resultsElement">
             {{ constantsValues.totalItems }} item{{ 's' if constantsValues.totalItems != 1 else '' }} found
         </span>
+        <div>
+            <ul class="paginationList border rounded">
+                <li class="pageItem" id="prevPage">&lt;</li>
+                <li class="pageItem" id="nextPage">&gt;</li>
+            </ul>
+        </div>
     </div>
 </section>
 

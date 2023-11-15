@@ -1,7 +1,5 @@
 @media only screen and (max-width: 2000px) {
-   /* #tableFilterSection {
-        grid-template-columns: 60% 15% 25%;
-    }*/
+   
 }
 
 @media only screen and (max-width: 1600px) {
@@ -14,24 +12,18 @@
     #paginationHolder {
         height: 80%;
     }
-    /*.paginationList a {
-        padding: 2px 12px;
-        top: 2px;
-    }*/
     .vgpgColumn {
         display: none;
     }
 }
 
 @media only screen and (max-width: 1200px) {
-    /*#tableFilterSection {
-        grid-template-columns: 45% 20% 35%;
-    }*/
-    /*#filterSortHolder > button {
+    #filterSortHolder > button {
         margin-left: 2px;
         font-size: 1.0em;
         padding: 4px;
-    }*/
+    }
+
     .imgColumn{
         width: 8% !important;
     }
@@ -56,63 +48,78 @@
         margin: 0 0 4px 0 !important;
     }
    
-    /*#tableFilterSection {
-        grid-template-columns: 35% 20% 45%;
-        height: 7vh;
-        padding: 0 0 10vh 0;*/ /* padding bottom to push up, since the header is overlapping it */
-    /*}*/
+    #tableFilterSection {
+        height: 2vh !important;
+        padding: 2vh 0 7vh 0;  /*padding bottom to push up, since the header is overlapping it */
+    }
 
     .brandColumn, .sizeColumn {
         display: none;
     }
 }
-@media only screen and (max-width: 750px) {
-    /*#tableFilterSection {
-        grid-template-columns: 20% 25% 55%;
-    }*/
-}
+
 @media only screen and (max-width: 650px) {
-    /*#tableFilterSection {
-        grid-template-columns: 30% 70%;
-    }*/
-   /* #resultsElement {
+    #resultsElement {
         display:none;
     }
-    #filterSortHolder > button {
-        font-size: 0.6em;
-        padding:2px;
-        margin-bottom:4px;
+    #tableFilterSection {
+        height: 2vh !important;
+        padding: 1vh 0 5vh 0; /*padding bottom to push up, since the header is overlapping it */
     }
-    .nicColumn {
-        display: none;
-    }
-    #tableFilterSection ul {
-        height: 60%;
-    }
-    #tableFilterSection li a {
-        padding: 2px 6px 2px 6px;
-        font-size: 0.5em;
-    }*/
 }
-
-@media only screen and (max-width: 465px) {
-    /*#tableFilterSection {
-        grid-template-columns: 10% 90%;
-        height: 3vh;
-        padding: 0 0 12vh 0; 
-    }*/
-    .flavorColumn {
+@media only screen and (max-width: 560px) {
+    #filterSortHolder > button > span {
         display: none;
     }
+    .paginationList{
+        height:37px;
+    }
+    #paginationHolder li, #paginationHolder li:first-child, #paginationHolder li:last-child {
+        padding: 6px 12px 4px 12px !important;
+    }
+}
+@media only screen and (max-width: 465px) {
     #filterSortHolder > button {
         padding-left: 0px !important;
         margin-left: 0px;
     }
-    #filterSortHolder > button > span {
+    .flavorColumn {
         display: none;
     }
-
 }
+@media only screen and (max-width: 375px) {
+    .paginationList {
+        height: 30px;
+    }
+    #paginationHolder li, #paginationHolder li:first-child, #paginationHolder li:last-child {
+        padding: 2px 8px 0px 8px !important;
+    }
+    .nicColumn {
+        display:none;
+    }
+}
+
+@media only screen and (max-height: 775px) {
+    #tableFilterSection {
+        height: 3vh !important;
+        padding: 1vh 0 7vh 0; /*padding bottom to push up, since the header is overlapping it */
+    }
+}
+
+@media only screen and (max-height: 500px) {
+    #tableFilterSection {
+        height: 3vh !important;
+        padding: 1vh 0 10vh 0; /*padding bottom to push up, since the header is overlapping it */
+    }
+}
+
+@media only screen and (max-height: 450px) {
+    #tableFilterSection {
+        height: 3vh !important;
+        padding: 1vh 0 15vh 0; /*padding bottom to push up, since the header is overlapping it */
+    }
+}
+
 /* 100% Image Width on Smaller Screens */
 @media only screen and (max-width: 700px) {
     #imgModalContent {

@@ -86,11 +86,11 @@ function refreshTable(pageNumber, totalPages, displayTable = true, resetData = f
 //nextPage/prevPage buttons are clicked
 //it updates the pagination based on the new current page
 function setThePagination(pageNumber, paginationArray) {
-    const ulNextP = document.getElementById("nextPage").parentElement;
-    const prevPage = document.getElementById("prevPage").parentElement;
+    const nextPage = document.getElementById("nextPage");
+    const prevPage = document.getElementById("prevPage");
 
     //remove the pages buttons, except for tne next and prev pages buttons
-    while (prevPage.nextElementSibling.firstChild.id !== "nextPage") 
+    while (prevPage.nextElementSibling.id !== "nextPage") 
         prevPage.nextElementSibling.remove();
 
     //loop over the new page buttons values
@@ -98,23 +98,21 @@ function setThePagination(pageNumber, paginationArray) {
         //new li and a elements
         const liEle = document.createElement("li");
         liEle.classList.add("pageItem");
-        ulNextP.parentElement.insertBefore(liEle, ulNextP);
-        const liEleA = document.createElement("a");
-        liEle.appendChild(liEleA);
+        nextPage.parentElement.insertBefore(liEle, nextPage);
 
         //set the value
-        liEleA.textContent = page;
+        liEle.textContent = page;
         //if the element is the default value (i.e. ...) then disable it
         if (page === paginationManager.placeHolderValue)
-            liEleA.classList.add('disabled')
+            liEle.classList.add('disabled')
         else//else give it an event listener
-            setPageButtonEventListener(liEleA);
+            setPageButtonEventListener(liEle);
 
         //if the current value is the current page then set it to .active
         //the reason i'm using timeout is because the .active class
         //transition effect does not work without it for some reason
         if (page == pageNumber) 
-            setTimeout(() => { liEleA.classList.add('active'); },0)
+            setTimeout(() => { liEle.classList.add('active'); },0)
     }
 
     //disable/enable the prevPage/nextPage buttons depending 
@@ -128,7 +126,7 @@ function setPageButtonEventListener(pageEle) {
     pageEle.addEventListener("click", () => {
         if (!pageEle.classList.contains('active')) {
             //set the new current page
-            paginationManager.setCurrentPage(parseInt(pageEle.text));
+            paginationManager.setCurrentPage(parseInt(pageEle.textContent));
             //set the pagination/display new data
             refreshTable(paginationManager.currentPage(), paginationManager.totalPages());
         }
@@ -185,7 +183,7 @@ function toggleDisabled(element, disable) {
     if (!element.classList.contains("disabled") && disable)
         element.classList.add("disabled");
     else if (element.classList.contains("disabled") && !disable)
-        element.className = "";
+        element.classList.remove("disabled");
 }
 
 
