@@ -65,9 +65,9 @@
     padding-right: 0;
 }
 
-    .modal-footer button {
-        margin: 2px 0 0 10px;
-    }
+.modal-footer button {
+    margin: 2px 0 0 10px;
+}
 
 /*filter pills/badge for the select of nic and vgpg */
 #filterForm span.badge {
@@ -77,13 +77,13 @@
     background-color: #7c95ae !important;
 }
 
-    #filterForm span.badge button {
-        padding: 0;
-        width: 8px;
-        margin: 1px 2px 3px 3px;
-        vertical-align: middle;
-        color: gray
-    }
+#filterForm span.badge button {
+    padding: 0;
+    width: 8px;
+    margin: 1px 2px 3px 3px;
+    vertical-align: middle;
+    color: gray
+}
 
 #filterForm #brandFilterDiv span.badge {
     max-width: 15.5%;

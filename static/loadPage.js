@@ -68,7 +68,7 @@ window.addEventListener("load", () => {
 //used by moving to next/prev pages, clicking on page numbers
 //also used on loading the page initially to set up the pagination
 //but display is disabled since the table is populated by html intially
-function refreshTable(pageNumber, totalPages, displayTable = true, resetData = false) {
+async function refreshTable(pageNumber, totalPages, displayTable = true, resetData = false) {
     //the array of pages from the first to the last button
     //calculated depending ont he current page and total pages
     const paginationArray = paginationArrayFactory(pageNumber, totalPages);
@@ -78,7 +78,9 @@ function refreshTable(pageNumber, totalPages, displayTable = true, resetData = f
 
     //invoke the loading of table and the data of the 
     //previous/next tables depending on the paginationArray
-    loadTheTable(pageNumber, paginationArray, displayTable = displayTable, resetData = resetData);
+    await loadTheTable(pageNumber, paginationArray, displayTable = displayTable, resetData = resetData);
+    //await the loading of the table and resize the rows if needed
+    resizeTable();
 }
 
 //the function that handles the changes to the pages

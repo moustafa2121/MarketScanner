@@ -99,6 +99,22 @@ const pageAlert = (() => {
     }
 })();
 
+window.addEventListener('resize', () => {
+    setTimeout(() => { resizeTable(); }, 500);
+}, true);
+
+// a function that makes sure all rows are equal in height
+function resizeTable() {
+    let averageArr = [];
+    for (let i = 1; i < 10; i++)
+        averageArr.push(document.querySelector(`#tableContainerDiv > table > tbody > tr:nth-child(${i + 1})`).clientHeight);
+    const average = averageArr.reduce((a, b) => a + b, 0) / averageArr.length;
+    if (document.querySelector(`#tableContainerDiv > table > tbody > tr:nth-child(1)`).clientHeight > average ||
+        document.getElementsByTagName("tbody").childElementCount == 1)
+        document.querySelector("#tableContainerSection").className = "";
+    else
+        document.querySelector("#tableContainerSection").className = "tableContainerSectionFullHeight";
+}
 
 //+18 verification modal handler
 (() => {
@@ -129,7 +145,7 @@ const pageAlert = (() => {
 //provide a listner for the footer button to close it and store in the
 //local storage that it has beenr ead
 (() => {
-    const footerButton = document.querySelector("footer > button");
+    const footerButton = document.querySelector("footer > div > button");
     if (!localStorage.getItem("footerRead")) {
         document.querySelector("footer").style.display = "block";
         footerButton.addEventListener("click", () => {

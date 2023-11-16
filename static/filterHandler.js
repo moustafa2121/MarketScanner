@@ -72,8 +72,6 @@ const updateFilterModal_display = (() => {
 //a closure fetches the data for the filter modal, saves it in localstorage
 //so they are only fetched when there is a change in the data
 //pre-processor for submitting the form filter (acts as the second step in filter handling)
-//todo: if there is a change in the backened, there has to be
-//a signal to refresh the filter data, sent by the homepage
 const filterValuesHolder = (function () {
     //the button that opens the filter modal
     const filterButton = document.querySelector("#filterSortHolder > button");
