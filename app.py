@@ -10,7 +10,7 @@ import uuid, math, json
 db = SQLAlchemy()
 
 itemsPerPage = 15
-
+#test
 #creates the app and its routes
 def create_app():
     #app/db initialization
