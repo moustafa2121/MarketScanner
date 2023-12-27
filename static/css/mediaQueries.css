@@ -82,7 +82,7 @@
         display: none;
     }
 }
-@media only screen and (max-width: 375px) {
+@media only screen and (max-width: 405px) {
     .paginationList {
         height: 30px;
     }
@@ -94,17 +94,20 @@
     }
 }
 
+
 @media only screen and (max-height: 775px) {
     #tableFilterSection {
         height: 3vh !important;
         padding: 1vh 0 7vh 0; /*padding bottom to push up, since the header is overlapping it */
     }
 }
+
 @media only screen and (max-height: 700px) {
     #filterSortModal {
         top: 0vh;
     }
 }
+
 @media only screen and (max-height: 500px) {
     #tableFilterSection {
         height: 3vh !important;
