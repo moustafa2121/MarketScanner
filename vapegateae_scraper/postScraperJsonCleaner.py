@@ -53,7 +53,9 @@ for item in itemList:
         item['flavor'] = item['flavor'][0].replace('Â\xa0', ' ')
         item['flavor'] = item['flavor'].lower().split('flavor')[0]
         item['flavor'] = item['flavor'].lower().split('flavour')[0]
-    item['flavor'] = [item['flavor']]
+        item['flavor'] = [item['flavor']]
+    else:
+        item['flavor'] = []
 
     jsonOutput['itemList'].append(item)
     

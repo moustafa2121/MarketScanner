@@ -60,6 +60,7 @@ def create_app():
     #todo: if invalid redirect to homepage
     #todo: if no data vailable?
     #todo: prevent users from calling it directly, only for fetchAPI
+
     #fetches the data to be populated in the filter modal
     #Given a filter pattern, it returns the narrowed down
     #filter values. if the pattern is "all", sends all the filter data
@@ -78,7 +79,6 @@ def create_app():
         
         #get the filterData based on the Products fetched (for further filtering)
         brandList, nicList, sizeList, vgpgList, websiteList = models.getFilterData(allProducts)
-
         return json.dumps({"filterValues": {"brandList":brandList,
                                             "nicList":nicList,
                                             "sizeList":sizeList,
@@ -89,6 +89,7 @@ def create_app():
 
     #todo: prevent users from calling it directly, only for fetchAPI
     #todo: if invalid redirect to homepage
+
     #called on in the background from the frontend
     #it fetches pages to be loaded dynmically in the frontend
     #returns a json with the data equalling [itemsPerPage] items
@@ -113,33 +114,36 @@ def create_app():
     #make a request to populate the DB with a website
     @app.route('/filldb', methods=['GET'])
     def website():
-        import models
-        #1: get the json from the scraper/microservice
-        #metaValues, itemList = dbExtract.openJson('dbData/cleanJson_Vape Shop Dubai.json')
+        # import models
+        # #1: get the json from the scraper/microservice
+        # # metaValues, itemList = openJson('dbData/cleanJson_Vape Shop Dubai.json')
+        # metaValues, itemList = openJson('dbData/cleanJson_Vape Gate AE.json')
         
-        #products = models.Product.query.all()
-        #for product in products:
-        #    db.session.delete(product)
-        #db.session.commit()
-        #print(models.Product.query.all())
+        # # #delete all models
+        # # products = models.Product.query.all()
+        # # for product in products:
+        # #    db.session.delete(product)
+        # # db.session.commit()
+        # # print(models.Product.query.all())
 
-        #websiteObject = models.ItemWebsite.query.all()
-        #for obj in websiteObject:
-            #db.session.delete(obj)
-        #db.session.commit()
-        #print(models.ItemWebsite.query.all())
-
-        #2: create and save the db items
-        #commit = True
-        #websiteObject = models.addWebsite(metaValues['websiteName'],
+        # # #delete all websites
+        # # websiteObject = models.ItemWebsite.query.all()
+        # # for obj in websiteObject:
+        # #     db.session.delete(obj)
+        # # db.session.commit()
+        # # print(models.ItemWebsite.query.all())
+        
+        # #2: create and save the db items
+        # commit = True
+        # websiteObject = models.addWebsite(metaValues['websiteName'],
         #                           metaValues['websiteBase'],
         #                           metaValues['websiteIcon'],
         #                           metaValues['numberOfItems'],
         #                           metaValues['timestamp'],
         #                           commit)
 
-        ##add the items
-        #for i, item in enumerate(itemList):
+        # #add the items
+        # for i, item in enumerate(itemList):
         #    print("adding: ", i)
         #    productTmp = models.addProduct(item['itemLink'],
         #                    item['name'],
@@ -153,25 +157,24 @@ def create_app():
         #    [models.addItemToProduct(size, productTmp, models.Size, "sizes", commit) for size in item['size']]
         #    [models.addItemToProduct(str(vgpg), productTmp, models.Vgpg, "vgpgs", commit) for vgpg in item['vgpg']]
         
-        #print(models.Size.query.all())
-        #print(models.Size.query.all()[0].value)
-        #print(type(models.Size.query.all()[0].value))
-        #productsWithSize10 = models.Product.query.join(models.Product.sizes).filter(models.Size.value == 30).all()
-        #print(productsWithSize10[0])
-        #print(len(productsWithSize10))
+        # print(models.Size.query.all())
+        # print(models.Size.query.all()[0].value)
+        # print(type(models.Size.query.all()[0].value))
+        # productsWithSize10 = models.Product.query.join(models.Product.sizes).filter(models.Size.value == 30).all()
+        # print(productsWithSize10[0])
+        # print(len(productsWithSize10))
 
-        #filters = {"nicMin": "5",
+        # filters = {"nicMin": "5",
         #           "nicMax":"20"}
 
-        #lst = models.filterProducts(filters)
-        ##print(lst)
-        ##print(lst)
-        #[print(i.nics) for i in lst]
-        #print(lst[0].brands)
+        # lst = models.filterProducts(filters)
+        # #print(lst)
+        # #print(lst)
+        # [print(i.nics) for i in lst]
+        # print(lst[0].brands)
 
         return "olo"
     
-
     #creates the DB
     with app.app_context():
         db.create_all()
