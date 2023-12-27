@@ -1,7 +1,6 @@
 #the views for the app
 
 from flask_sqlalchemy import SQLAlchemy
-import dbExtract
 from flask import Flask, render_template, redirect, url_for
 from flask import request, make_response
 import uuid, math, json
@@ -9,8 +8,16 @@ import uuid, math, json
 #db reference
 db = SQLAlchemy()
 
+
+
+#takes a json and returns the itemList to be added to the DB
+def openJson(fileName, start=0, end=99999):
+    with open(fileName) as file:
+        fileData = json.load(file)
+    return fileData['meta'], fileData['itemList'][start:end]
+
 itemsPerPage = 15
-#test
+
 #creates the app and its routes
 def create_app():
     #app/db initialization

@@ -16,7 +16,7 @@
     <SuppressCollectPythonCloudServiceFiles>true</SuppressCollectPythonCloudServiceFiles>
     <Name>MarketScanner</Name>
     <RootNamespace>MarketScanner</RootNamespace>
-    <InterpreterId>MSBuild|FlaskEnv|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>MSBuild|FlaskEnv2|$(MSBuildProjectFullPath)</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -28,9 +28,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.py" />
-    <Compile Include="dbExtract.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="models.py">
       <SubType>Code</SubType>
     </Compile>
@@ -77,10 +74,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Interpreter Include="FlaskEnv\">
-      <Id>FlaskEnv</Id>
-      <Version>3.9</Version>
-      <Description>FlaskEnv (Python 3.9 (64-bit))</Description>
+    <Interpreter Include="FlaskEnv2\">
+      <Id>FlaskEnv2</Id>
+      <Version>0.0</Version>
+      <Description>FlaskEnv2 (Python 3.12 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
