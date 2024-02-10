@@ -1,5 +1,6 @@
 #holds and manages models in the DB
 
+
 from app import db
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy import func, and_, or_
