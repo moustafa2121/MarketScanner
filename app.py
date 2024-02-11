@@ -113,7 +113,7 @@ def create_app():
   
     #make a request to populate the DB with a website
     @app.route('/filldb', methods=['GET'])
-    def website():
+    def populateDB():
         # import models
         # #1: get the json from the scraper/microservice
         # # metaValues, itemList = openJson('dbData/cleanJson_Vape Shop Dubai.json')
