@@ -55,3 +55,4 @@ scrapy crawl spider -O websitedata.json
 
 
 ### Demo ⏵
+![demo](https://github.com/moustafa2121/MarketScanner/blob/master/demo.gif)
