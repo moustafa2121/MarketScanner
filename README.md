@@ -12,7 +12,6 @@ Only two websites have been scraped, but can be expanded upon using Scrapy (See 
 - Bootstrap
 - SQLAlchemy
 - Scrapy
-- Bootstrap
 
 ### Features 📋
 -	Responsive display
