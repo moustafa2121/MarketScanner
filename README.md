@@ -15,11 +15,11 @@ Only two websites have been scraped, but can be expanded upon using Scrapy (See 
 
 ### Features 📋
 -	Responsive display
--	Pagination
-  o	Data of adjacent pages are fetched/deleted in the background asynchronically based on the current page, providing smooth and fast transition between pages
--	Data filtering
-  o	Filter based on website, name, product attributes, and other categories
-  o	Combine filters (concurrently or consecutively)
+-	Pagination\
+    o	Data of adjacent pages are fetched/deleted in the background asynchronically based on the current page, providing smooth and fast transition between pages
+-	Data filtering\
+  o	Filter based on website, name, product attributes, and other categories\
+  o	Combine filters (concurrently or consecutively)\
   o	Filter options are based on the data fetched (i.e. filtered data will have a filter that contains exclusively their attributes for further filtering)
 
 
@@ -44,7 +44,7 @@ To use the scrapping files in this project:
 ```sh
 scrapy crawl spider -O websitedata.json
 ```
-5-	Run the postScraperJsonCleaner on the outputted json. This will\
+5-	Run the postScraperJsonCleaner on the outputted json. This will:\
   a.	Clean the data (this will vary between websites as they each have their own mess and inconsistencies)\
   b.	Place the cleaned data into a json compatible with the function that will populate the DB\
 6-	Uncomment code corresponding in the populateDB function in app.py\
